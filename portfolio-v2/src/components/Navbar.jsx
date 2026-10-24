@@ -13,6 +13,14 @@ function Navbar() {
             About
           </a>
 
+          <a href="#experience" className="hover:text-sky-400">
+            Experience
+          </a>
+
+          <a href="#experience" className="hover:text-sky-400">
+            Education
+          </a>
+
           <a href="#skills" className="hover:text-sky-400">
             Skills
           </a>
