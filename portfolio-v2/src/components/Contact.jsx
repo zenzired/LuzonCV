@@ -28,7 +28,7 @@ function Contact() {
 
       <div
         className="
-          max-w-4xl
+          max-w-6xl
           mx-auto
           bg-slate-800/80
           backdrop-blur-sm
