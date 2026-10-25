@@ -2,22 +2,46 @@ function About() {
   return (
     <section
       id="about"
-      className="max-w-5xl mx-auto px-6 py-24"
+      className="max-w-6xl mx-auto px-6 py-24"
     >
-      <h2 className="text-4xl font-bold mb-6">
+      <h2 className="text-3xl md:text-4xl font-bold mb-4">
         About Me
       </h2>
 
-      <p className="text-slate-300 text-lg leading-relaxed">
-        I am a Cloud Support Engineer with experience
-        supporting Microsoft technologies, Windows,
-        cloud platforms, troubleshooting, and
-        PowerShell automation.
+      <p
+        className="
+          text-slate-300
+          text-lg
+          md:text-xl
+          leading-relaxed
+          max-w-5xl
+          mx-auto
+          mb-12
+          text-left
+          md:text-center
+        "
+      >
+        I'm an Infrastructure & Cloud Support Engineer
+        based in Adelaide, South Australia, with a passion
+        for solving complex technical challenges and finding
+        practical ways to improve reliability, efficiency,
+        and user experience through technology.
 
-        I enjoy solving technical challenges,
-        building automation solutions, and
-        continuously learning cloud, cybersecurity,
-        and AI technologies.
+        Throughout my career, I've worked across managed
+        services, enterprise support, cloud platforms,
+        infrastructure deployments, and modernization
+        projects. I enjoy troubleshooting difficult issues,
+        understanding how systems work, and building
+        automation solutions that reduce manual effort and
+        improve operational outcomes.
+
+        Outside of my day-to-day role, I'm continually
+        exploring new technologies including cloud
+        architecture, cybersecurity, artificial intelligence,
+        and machine learning. I enjoy hands-on learning,
+        building personal projects, and expanding my skills
+        through experimentation and continuous professional
+        development.
       </p>
     </section>
   );
