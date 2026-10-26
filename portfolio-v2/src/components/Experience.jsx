@@ -76,104 +76,58 @@ function Experience() {
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: false }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.6 }}
     >
-      <h2 className="text-3xl md:text-4xl font-bold mb-4">
-        Professional Experience
-      </h2>
+      <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
+        <span className="h-3 w-3 rounded-full bg-sky-400 animate-pulse" />
+        <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+          Professional Experience
+        </h2>
+      </div>
 
-      <p
-        className="
-          text-slate-300
-          text-lg
-          md:text-xl
-          leading-relaxed
-          max-w-5xl
-          mx-auto
-          mb-12
-          text-left
-          md:text-center
-        "
-      >
-        Infrastructure & Cloud Support Engineer with
-        16+ years of experience delivering enterprise
-        support, cloud operations, infrastructure
+      <p className="text-slate-300 text-lg md:text-xl leading-relaxed max-w-5xl mx-auto mb-12 text-left md:text-center">
+        Infrastructure & Cloud Support Engineer with 16+ years of experience
+        delivering enterprise support, cloud operations, infrastructure
         modernization and deployment services.
-
-        Experienced across AWS, Kubernetes, Terraform,
-        Windows, Linux, Microsoft technologies,
-        networking, automation and large-scale
-        production environments.
       </p>
 
       <div className="space-y-8">
         {experiences.map((job, index) => (
           <motion.div
             key={`${job.company}-${job.role}`}
-            initial={{
-              opacity: 0,
-              y: 150,
-              scale: 0.85,
-            }}
-            whileInView={{
-              opacity: 1,
-              y: 0,
-              scale: 1,
-            }}
-            viewport={{
-              once: false,
-              amount: 0.2,
-            }}
+            initial={{ opacity: 0, y: 60, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.2 }}
             transition={{
-              duration: 1.2,
-              delay: index * 0.25,
+              duration: 0.7,
+              delay: index * 0.12,
               ease: "easeOut",
             }}
             className="
-              bg-slate-800/80
-              backdrop-blur-sm
-              border border-slate-700
+              bg-slate-800/60
+              backdrop-blur-md
+              border border-slate-700/80
+              hover:border-sky-500/40
               rounded-2xl
-              p-6
-              hover:border-sky-400
-              hover:shadow-lg
-              hover:shadow-sky-500/10
+              p-6 md:p-8
               transition-all
               duration-300
+              hover:shadow-xl
+              hover:shadow-sky-500/5
+              hover:-translate-y-1
             "
           >
-            <div
-              className="
-                flex
-                flex-col
-                md:flex-row
-                md:justify-between
-                md:items-start
-                gap-3
-                mb-4
-              "
-            >
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4">
               <div>
                 <h3 className="text-xl md:text-2xl font-bold text-white">
                   {job.role}
                 </h3>
-
                 <p className="text-sky-400 text-lg font-medium">
                   {job.company}
                 </p>
               </div>
 
-              <span
-                className="
-                  self-start
-                  text-slate-400
-                  bg-slate-700
-                  px-4
-                  py-2
-                  rounded-lg
-                  text-sm
-                "
-              >
+              <span className="self-start text-slate-400 bg-slate-700/70 border border-slate-600/50 px-4 py-1.5 rounded-lg text-sm font-medium">
                 {job.period}
               </span>
             </div>
@@ -187,13 +141,19 @@ function Experience() {
                 <span
                   key={item}
                   className="
-                    bg-slate-700
-                    text-sky-400
-                    px-3
-                    py-2
+                    bg-slate-800/90
+                    text-sky-300
+                    border border-slate-700/60
+                    hover:border-sky-400/50
+                    hover:text-sky-200
+                    hover:bg-slate-700/60
+                    transition-all
+                    duration-200
+                    px-3.5 py-1.5
                     rounded-full
                     text-sm
                     font-medium
+                    cursor-default
                   "
                 >
                   {item}

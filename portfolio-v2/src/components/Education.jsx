@@ -5,8 +5,7 @@ function Education() {
     {
       title:
         "Post Graduate Program in Artificial Intelligence & Machine Learning",
-      institution:
-        "California Institute of Technology (Caltech)",
+      institution: "California Institute of Technology (Caltech)",
       description:
         "Advanced studies focused on Artificial Intelligence, Machine Learning, Data Science, Predictive Analytics and practical AI applications.",
       tags: [
@@ -54,66 +53,45 @@ function Education() {
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: false }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.6 }}
     >
-      <h2 className="text-3xl md:text-4xl font-bold mb-4">
-        Education & Professional Development
-      </h2>
+      <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
+        <span className="h-3 w-3 rounded-full bg-sky-400 animate-pulse" />
+        <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+          Education & Professional Development
+        </h2>
+      </div>
 
-      <p
-        className="
-          text-slate-300
-          text-lg
-          md:text-xl
-          leading-relaxed
-          max-w-5xl
-          mx-auto
-          mb-12
-          text-left
-          md:text-center
-        "
-      >
-        Continuous learning has been a key part of my
-        professional journey, helping me stay current
-        with emerging technologies across cloud,
-        infrastructure, automation, artificial
-        intelligence and cybersecurity.
+      <p className="text-slate-300 text-lg md:text-xl leading-relaxed max-w-5xl mx-auto mb-12 text-left md:text-center">
+        Continuous learning has been a key part of my professional journey,
+        helping me stay current with emerging technologies across cloud,
+        infrastructure, automation, artificial intelligence and cybersecurity.
       </p>
 
       <div className="space-y-8">
         {educationCards.map((item, index) => (
           <motion.div
             key={item.title}
-            initial={{
-              opacity: 0,
-              y: 150,
-              scale: 0.85,
-            }}
-            whileInView={{
-              opacity: 1,
-              y: 0,
-              scale: 1,
-            }}
-            viewport={{
-              once: false,
-              amount: 0.2,
-            }}
+            initial={{ opacity: 0, y: 60, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.2 }}
             transition={{
-              duration: 1.2,
-              delay: index * 0.25,
+              duration: 0.7,
+              delay: index * 0.12,
               ease: "easeOut",
             }}
             className="
-              bg-slate-800/80
-              backdrop-blur-sm
-              border border-slate-700
+              bg-slate-800/60
+              backdrop-blur-md
+              border border-slate-700/80
+              hover:border-sky-500/40
               rounded-2xl
-              p-6
-              hover:border-sky-400
-              hover:shadow-lg
-              hover:shadow-sky-500/10
+              p-6 md:p-8
               transition-all
               duration-300
+              hover:shadow-xl
+              hover:shadow-sky-500/5
+              hover:-translate-y-1
             "
           >
             <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
@@ -133,13 +111,19 @@ function Education() {
                 <span
                   key={tag}
                   className="
-                    bg-slate-700
-                    text-sky-400
-                    px-3
-                    py-2
+                    bg-slate-800/90
+                    text-sky-300
+                    border border-slate-700/60
+                    hover:border-sky-400/50
+                    hover:text-sky-200
+                    hover:bg-slate-700/60
+                    transition-all
+                    duration-200
+                    px-3.5 py-1.5
                     rounded-full
                     text-sm
                     font-medium
+                    cursor-default
                   "
                 >
                   {tag}
