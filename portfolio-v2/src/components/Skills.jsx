@@ -1,20 +1,22 @@
+import { motion } from "framer-motion";
+
 function Skills() {
   const skillGroups = [
     {
       category: "Cloud Platforms",
-      skills: ["AWS", "Azure", "GCP"]
+      skills: ["AWS", "Azure", "GCP"],
     },
     {
       category: "Containers & Orchestration",
-      skills: ["Kubernetes", "Docker"]
+      skills: ["Kubernetes", "Docker"],
     },
     {
       category: "Infrastructure as Code",
-      skills: ["Terraform", "GitHub Actions", "CI/CD"]
+      skills: ["Terraform", "GitHub Actions", "CI/CD"],
     },
     {
       category: "Automation",
-      skills: ["Python", "Bash", "PowerShell"]
+      skills: ["Python", "Bash", "PowerShell"],
     },
     {
       category: "Platforms",
@@ -22,8 +24,8 @@ function Skills() {
         "Windows Server",
         "Linux",
         "Microsoft 365",
-        "Entra ID"
-      ]
+        "Entra ID",
+      ],
     },
     {
       category: "Networking",
@@ -32,15 +34,19 @@ function Skills() {
         "DHCP",
         "TCP/IP",
         "VPN",
-        "Firewalls"
-      ]
-    }
+        "Firewalls",
+      ],
+    },
   ];
 
   return (
-    <section
+    <motion.section
       id="skills"
       className="max-w-6xl mx-auto px-6 py-24"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
     >
       <h2 className="text-3xl md:text-4xl font-bold mb-4">
         Technical Skills
@@ -65,10 +71,16 @@ function Skills() {
       </p>
 
       <div className="grid md:grid-cols-2 gap-8">
-
-        {skillGroups.map((group) => (
-          <div
+        {skillGroups.map((group, index) => (
+          <motion.div
             key={group.category}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 0.5,
+              delay: index * 0.1,
+            }}
             className="
               bg-slate-800/80
               backdrop-blur-sm
@@ -88,7 +100,6 @@ function Skills() {
             </h3>
 
             <div className="flex flex-wrap gap-3">
-
               {group.skills.map((skill) => (
                 <span
                   key={skill}
@@ -105,14 +116,11 @@ function Skills() {
                   {skill}
                 </span>
               ))}
-
             </div>
-
-          </div>
+          </motion.div>
         ))}
-
       </div>
-    </section>
+    </motion.section>
   );
 }
 

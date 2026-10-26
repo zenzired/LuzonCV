@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 function Experience() {
   const experiences = [
     {
@@ -10,10 +12,9 @@ function Experience() {
         "Infrastructure Modernization",
         "Windows 11 Migration",
         "Microsoft Intune",
-        "Network Deployment"
-      ]
+        "Network Deployment",
+      ],
     },
-
     {
       role: "Cloud Support Engineer",
       company: "Thought Machine | Singapore",
@@ -24,10 +25,9 @@ function Experience() {
         "AWS",
         "Kubernetes",
         "Terraform",
-        "Python & Bash"
-      ]
+        "Python & Bash",
+      ],
     },
-
     {
       role: "Technical Support Engineer",
       company: "Lumen Technologies | Singapore",
@@ -38,10 +38,9 @@ function Experience() {
         "Windows Server",
         "Linux",
         "VMware",
-        "Incident Response"
-      ]
+        "Incident Response",
+      ],
     },
-
     {
       role: "Associate Engineer",
       company: "Lumen Technologies | Singapore",
@@ -52,10 +51,9 @@ function Experience() {
         "Hosting Support",
         "Windows",
         "Linux",
-        "Operations"
-      ]
+        "Operations",
+      ],
     },
-
     {
       role: "Technical Support Engineer",
       company: "iConz-Webvisions | Singapore",
@@ -66,15 +64,19 @@ function Experience() {
         "Linux Hosting",
         "Windows Server",
         "DNS & Email",
-        "VMware"
-      ]
-    }
+        "VMware",
+      ],
+    },
   ];
 
   return (
-    <section
+    <motion.section
       id="experience"
       className="max-w-6xl mx-auto px-6 py-24"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: false }}
+      transition={{ duration: 0.8 }}
     >
       <h2 className="text-3xl md:text-4xl font-bold mb-4">
         Professional Experience
@@ -105,9 +107,28 @@ function Experience() {
       </p>
 
       <div className="space-y-8">
-        {experiences.map((job) => (
-          <div
+        {experiences.map((job, index) => (
+          <motion.div
             key={`${job.company}-${job.role}`}
+            initial={{
+              opacity: 0,
+              y: 150,
+              scale: 0.85,
+            }}
+            whileInView={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            viewport={{
+              once: false,
+              amount: 0.2,
+            }}
+            transition={{
+              duration: 1.2,
+              delay: index * 0.25,
+              ease: "easeOut",
+            }}
             className="
               bg-slate-800/80
               backdrop-blur-sm
@@ -179,10 +200,10 @@ function Experience() {
                 </span>
               ))}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-    </section>
+    </motion.section>
   );
 }
 
