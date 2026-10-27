@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://luzon.arcilla.org/sitemap.xml
