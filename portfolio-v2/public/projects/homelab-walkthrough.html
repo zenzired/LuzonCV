@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASD-STE100 Technical Manual — Multi-Node Raspberry Pi Home Lab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            canvas: '#0d1117',
+            surface: '#161b22',
+            surfaceHover: '#1f2630',
+            borderSubtle: '#30363d',
+            accentBlue: '#58a6ff',
+            accentGreen: '#3fb950',
+            accentOrange: '#f0883e',
+            accentPurple: '#bc8cff',
+            accentTeal: '#39c5cf',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #0d1117;
+      color: #e6edf3;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Animated SVG flow dashed line */
+    @keyframes dashFlow {
+      to {
+        stroke-dashoffset: -24;
+      }
+    }
+
+    .flow-line-active {
+      stroke-dasharray: 6 6;
+      animation: dashFlow 0.9s linear infinite;
+    }
+
+    /* Pulse ring for active nodes in animation */
+    @keyframes nodePulse {
+      0%, 100% {
+        stroke-opacity: 1;
+        filter: drop-shadow(0 0 8px rgba(88, 166, 255, 0.55));
+      }
+      50% {
+        stroke-opacity: 0.55;
+        filter: drop-shadow(0 0 2px rgba(88, 166, 255, 0.2));
+      }
+    }
+
+    .node-highlight {
+      animation: nodePulse 1.6s ease-in-out infinite;
+    }
+
+    /* Moving data packets along paths */
+    .packet-dot {
+      transition: opacity 0.25s ease;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #484f58;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-30 border-b border-borderSubtle bg-canvas/90 backdrop-blur-md">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3 sm:px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg border border-blue-500/40 bg-blue-500/10 text-accentBlue">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="text-base font-semibold tracking-tight text-white sm:text-lg">
+              Multi-Node Raspberry Pi Home Lab
+            </h1>
+            <span class="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-medium text-accentGreen">
+              ASD-STE100 COMPLIANT
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            System Architecture, Animated Walkthrough, and Maintenance Manual (LAN 192.168.2.0/24)
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="https://github.com/zenzired/homelab-observability-devsecops" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-lg border border-borderSubtle bg-surface px-3.5 py-2 text-xs font-medium text-slate-200 transition hover:border-accentBlue hover:bg-surfaceHover hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40">
+          <svg class="h-4 w-4 text-accentBlue" fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
+          </svg>
+          <span>View GitHub Repo</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 sm:py-8">
+
+    <!-- SECTION 0: Interactive Animated Video-Style Player & SVG Topology -->
+    <section class="overflow-hidden rounded-xl border border-borderSubtle bg-surface shadow-xl">
+      <!-- Player Top Status Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-borderSubtle bg-canvas/60 px-4 py-3 sm:px-6">
+        <div class="flex items-center gap-2.5">
+          <span id="liveIndicator" class="inline-block h-2.5 w-2.5 rounded-full bg-accentGreen animate-pulse"></span>
+          <span class="font-mono text-xs font-semibold uppercase tracking-wider text-slate-300">
+            Animated System Walkthrough
+          </span>
+          <span id="sceneBadge" class="rounded bg-blue-500/15 px-2 py-0.5 font-mono text-xs font-medium text-accentBlue">Scene 1 / 5</span>
+        </div>
+
+        <!-- Scene Quick-Select Pills -->
+        <div class="flex flex-wrap items-center gap-1.5" id="scenePills">
+          <button data-scene="0" class="scene-pill rounded-md px-2.5 py-1 font-mono text-xs transition bg-blue-600 text-white font-semibold">01 Topology</button>
+          <button data-scene="1" class="scene-pill rounded-md px-2.5 py-1 font-mono text-xs transition bg-canvas text-slate-400 hover:text-white">02 DevSecOps</button>
+          <button data-scene="2" class="scene-pill rounded-md px-2.5 py-1 font-mono text-xs transition bg-canvas text-slate-400 hover:text-white">03 Edge Exporters</button>
+          <button data-scene="3" class="scene-pill rounded-md px-2.5 py-1 font-mono text-xs transition bg-canvas text-slate-400 hover:text-white">04 30s Scrape</button>
+          <button data-scene="4" class="scene-pill rounded-md px-2.5 py-1 font-mono text-xs transition bg-canvas text-slate-400 hover:text-white">05 SQLite WAL</button>
+        </div>
+      </div>
+
+      <!-- Interactive SVG Topology Stage -->
+      <div class="relative bg-[#090d13] p-3 sm:p-6">
+        <div class="mx-auto w-full max-w-5xl">
+          <svg id="topologySvg" viewBox="0 0 980 520" class="h-auto w-full select-none rounded-lg border border-borderSubtle/80 bg-[#0d1117]" role="img" aria-label="4-Node Raspberry Pi Home Lab Architecture Diagram">
+            <defs>
+              <!-- Arrowhead markers -->
+              <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#58a6ff"></path>
+              </marker>
+              <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#3fb950"></path>
+              </marker>
+              <marker id="arrowOrange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#f0883e"></path>
+              </marker>
+              <marker id="arrowTeal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#39c5cf"></path>
+              </marker>
+              <!-- Subtle grid background -->
+              <pattern id="gridPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#161b22" stroke-width="1"></path>
+              </pattern>
+            </defs>
+
+            <!-- Grid Background -->
+            <rect width="980" height="520" fill="url(#gridPattern)"></rect>
+
+            <!-- Outer LAN Boundary -->
+            <rect x="18" y="16" width="944" height="488" rx="14" fill="none" stroke="#30363d" stroke-width="1.5" stroke-dasharray="8 4"></rect>
+            <rect x="34" y="8" width="236" height="22" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"></rect>
+            <text x="152" y="23" text-anchor="middle" fill="#8b949e" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">
+              HOME LAB LAN: 192.168.2.0/24
+            </text>
+
+            <!-- Connection Paths (Layer 1: Underneath Cards) -->
+            <!-- Path 1: Prometheus (:9090) -> microk8sMaster (:9100 & :30808) -->
+            <path id="path-prom-k8s" d="M 480 230 C 420 180, 390 155, 345 155" fill="none" stroke="#30363d" stroke-width="2" marker-end="url(#arrowBlue)"></path>
+            <!-- Path 2: Prometheus (:9090) -> aiagent-n8n (:9100) -->
+            <path id="path-prom-n8n" d="M 480 315 C 420 355, 390 385, 345 385" fill="none" stroke="#30363d" stroke-width="2" marker-end="url(#arrowBlue)"></path>
+            <!-- Path 3: Prometheus (:9090) -> pizero-pihole (:9100 & :9617) -->
+            <path id="path-prom-pihole" d="M 650 355 L 650 398" fill="none" stroke="#30363d" stroke-width="2" marker-end="url(#arrowBlue)"></path>
+            <!-- Path 4: Grafana (:3000) -> Prometheus (:9090) inside Docker bridge -->
+            <path id="path-graf-prom" d="M 730 222 L 665 222" fill="none" stroke="#30363d" stroke-width="2" marker-end="url(#arrowOrange)"></path>
+            <!-- Path 5: Grafana (:3000) -> /opt/grafana-data (SQLite WAL) -->
+            <path id="path-graf-vol" d="M 825 275 L 825 312" fill="none" stroke="#30363d" stroke-width="2" marker-end="url(#arrowGreen)"></path>
+
+            <!-- Path Labels -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#8b949e">
+              <rect x="364" y="132" width="106" height="18" rx="4" fill="#0d1117" stroke="#30363d"></rect>
+              <text x="417" y="144" text-anchor="middle" fill="#58a6ff">30s scrape :9100/:30808</text>
+
+              <rect x="364" y="392" width="96" height="18" rx="4" fill="#0d1117" stroke="#30363d"></rect>
+              <text x="412" y="404" text-anchor="middle" fill="#58a6ff">30s scrape :9100</text>
+
+              <rect x="660" y="366" width="128" height="18" rx="4" fill="#0d1117" stroke="#30363d"></rect>
+              <text x="724" y="378" text-anchor="middle" fill="#58a6ff">30s scrape :9100/:9617</text>
+            </g>
+
+            <!-- NODE 1: microk8sMaster (Top Left) -->
+            <g id="node-k8s" class="cursor-pointer transition-opacity" onclick="selectScene(1)">
+              <rect x="38" y="48" width="305" height="205" rx="12" fill="#161b22" stroke="#30363d" stroke-width="2"></rect>
+              <!-- Header Bar -->
+              <rect x="38" y="48" width="305" height="36" rx="12" fill="#1c2432"></rect>
+              <rect x="38" y="70" width="305" height="14" fill="#1c2432"></rect>
+              <circle cx="56" cy="66" r="5" fill="#58a6ff"></circle>
+              <text x="68" y="70" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700">
+                microk8sMaster
+              </text>
+              <text x="330" y="70" text-anchor="end" fill="#58a6ff" font-family="JetBrains Mono, monospace" font-size="11">
+                192.168.2.174
+              </text>
+
+              <!-- Subtitle -->
+              <text x="52" y="102" fill="#8b949e" font-size="11">
+                Raspberry Pi 5 • Ubuntu 24.04 • User: <tspan fill="#e6edf3" font-family="JetBrains Mono, monospace">k8sops</tspan>
+              </text>
+              <rect x="52" y="110" width="276" height="22" rx="5" fill="#0d1117" stroke="#30363d"></rect>
+              <text x="62" y="125" fill="#3fb950" font-family="JetBrains Mono, monospace" font-size="10.5">
+                Storage: V30 A2 microSD (Fast 4K IOPS)
+              </text>
+
+              <!-- Service Pills -->
+              <rect x="52" y="140" width="134" height="26" rx="6" fill="#1f2937" stroke="#3b82f6" stroke-opacity="0.4"></rect>
+              <text x="119" y="157" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono, monospace" font-size="10.5">
+                MicroK8s v1.35.6
+              </text>
+
+              <rect x="194" y="140" width="134" height="26" rx="6" fill="#1f2937" stroke="#bc8cff" stroke-opacity="0.5"></rect>
+              <text x="261" y="157" text-anchor="middle" fill="#d8b4fe" font-family="JetBrains Mono, monospace" font-size="10.5">
+                Kyverno + Trivy
+              </text>
+
+              <rect x="52" y="174" width="276" height="26" rx="6" fill="#0d1117" stroke="#30363d"></rect>
+              <text x="190" y="191" text-anchor="middle" fill="#e6edf3" font-family="JetBrains Mono, monospace" font-size="10.5">
+                Policy: disallow-latest-tag (cka-lab)
+              </text>
+
+              <rect x="52" y="208" width="134" height="28" rx="6" fill="#13231b" stroke="#3fb950" stroke-opacity="0.5"></rect>
+              <text x="119" y="226" text-anchor="middle" fill="#3fb950" font-family="JetBrains Mono, monospace" font-size="10.5">
+                node_exporter :9100
+              </text>
+
+              <rect x="194" y="208" width="134" height="28" rx="6" fill="#13231b" stroke="#3fb950" stroke-opacity="0.5"></rect>
+              <text x="261" y="226" text-anchor="middle" fill="#3fb950" font-family="JetBrains Mono, monospace" font-size="10.5">
+                kube-state :30808
+              </text>
+            </g>
+
+            <!-- NODE 3: aiagent-n8n (Bottom Left) -->
+            <g id="node-n8n" class="cursor-pointer transition-opacity" onclick="selectScene(2)">
+              <rect x="38" y="286" width="305" height="196" rx="12" fill="#161b22" stroke="#30363d" stroke-width="2"></rect>
+              <rect x="38" y="286" width="305" height="36" rx="12" fill="#271d29"></rect>
+              <rect x="38" y="308" width="305" height="14" fill="#271d29"></rect>
+              <circle cx="56" cy="304" r="5" fill="#f0883e"></circle>
+              <text x="68" y="308" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700">
+                aiagent-n8n
+              </text>
+              <text x="330" y="308" text-anchor="end" fill="#f0883e" font-family="JetBrains Mono, monospace" font-size="11">
+                192.168.2.167
+              </text>
+
+              <text x="52" y="340" fill="#8b949e" font-size="11">
+                Raspberry Pi 4 • Ubuntu LTS • User: <tspan fill="#e6edf3" font-family="JetBrains Mono, monospace">n8nops</tspan>
+              </text>
+
+              <rect x="52" y="354" width="276" height="34" rx="6" fill="#1f1a24" stroke="#f0883e" stroke-opacity="0.45"></rect>
+              <text x="190" y="375" text-anchor="middle" fill="#fdba74" font-family="JetBrains Mono, monospace" font-size="11">
+                n8n Workflow Engine (:5678)
+              </text>
+
+              <rect x="52" y="398" width="276" height="28" rx="6" fill="#0d1117" stroke="#30363d"></rect>
+              <text x="190" y="416" text-anchor="middle" fill="#8b949e" font-family="JetBrains Mono, monospace" font-size="10.5">
+                Webhook Automation &amp; Alert Receiver
+              </text>
+
+              <rect x="52" y="436" width="276" height="30" rx="6" fill="#13231b" stroke="#3fb950" stroke-opacity="0.5"></rect>
+              <text x="190" y="455" text-anchor="middle" fill="#3fb950" font-family="JetBrains Mono, monospace" font-size="10.5">
+                node_exporter :9100
+              </text>
+            </g>
+
+            <!-- NODE 2: ubuntu-Host Observability Hub (Top Right) -->
+            <g id="node-obs" class="cursor-pointer transition-opacity" onclick="selectScene(3)">
+              <rect x="466" y="48" width="476" height="306" rx="12" fill="#161b22" stroke="#30363d" stroke-width="2"></rect>
+              <rect x="466" y="48" width="476" height="36" rx="12" fill="#172621"></rect>
+              <rect x="466" y="70" width="476" height="14" fill="#172621"></rect>
+              <circle cx="484" cy="66" r="5" fill="#3fb950"></circle>
+              <text x="496" y="70" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700">
+                ubuntu-Host (Observability Hub)
+              </text>
+              <text x="928" y="70" text-anchor="end" fill="#3fb950" font-family="JetBrains Mono, monospace" font-size="11">
+                192.168.2.176
+              </text>
+
+              <text x="482" y="102" fill="#8b949e" font-size="11">
+                Raspberry Pi 4 • Ubuntu LTS • Operator: <tspan fill="#e6edf3" font-family="JetBrains Mono, monospace">gops</tspan> (No sudo)
+              </text>
+
+              <!-- Inner Docker Compose Box -->
+              <rect x="480" y="114" width="448" height="172" rx="10" fill="#0d1117" stroke="#39c5cf" stroke-opacity="0.45" stroke-dasharray="5 3"></rect>
+              <text x="494" y="132" fill="#39c5cf" font-family="JetBrains Mono, monospace" font-size="10.5" font-weight="600">
+                Docker Compose Network: observability_default
+              </text>
+
+              <!-- Prometheus Container -->
+              <rect x="494" y="144" width="172" height="128" rx="8" fill="#161b22" stroke="#f0883e" stroke-opacity="0.6"></rect>
+              <text x="580" y="165" text-anchor="middle" fill="#f0883e" font-family="JetBrains Mono, monospace" font-size="11.5" font-weight="700">
+                Prometheus
+              </text>
+              <text x="580" y="182" text-anchor="middle" fill="#e6edf3" font-family="JetBrains Mono, monospace" font-size="10.5">
+                Host Port :9090
+              </text>
+              <text x="580" y="204" text-anchor="middle" fill="#8b949e" font-family="JetBrains Mono, monospace" font-size="10">
+                Scrape: 30s interval
+              </text>
+              <text x="580" y="220" text-anchor="middle" fill="#8b949e" font-family="JetBrains Mono, monospace" font-size="10">
+                Targets: 5 endpoints
+              </text>
+              <rect x="504" y="234" width="152" height="26" rx="5" fill="#231915" stroke="#f0883e" stroke-opacity="0.4"></rect>
+              <text x="580" y="251" text-anchor="middle" fill="#fdba74" font-family="JetBrains Mono, monospace" font-size="10">
+                TSDB Cap: 7d / 1GB
+              </text>
+
+              <!-- Docker DNS Label between Grafana and Prometheus -->
+              <rect x="668" y="196" width="60" height="20" rx="4" fill="#161b22" stroke="#39c5cf" stroke-opacity="0.5"></rect>
+              <text x="698" y="209" text-anchor="middle" fill="#39c5cf" font-family="JetBrains Mono, monospace" font-size="9">
+                Bridge DNS
+              </text>
+
+              <!-- Grafana Container -->
+              <rect x="730" y="144" width="184" height="128" rx="8" fill="#161b22" stroke="#58a6ff" stroke-opacity="0.6"></rect>
+              <text x="822" y="165" text-anchor="middle" fill="#58a6ff" font-family="JetBrains Mono, monospace" font-size="11.5" font-weight="700">
+                grafana-sandbox
+              </text>
+              <text x="822" y="182" text-anchor="middle" fill="#e6edf3" font-family="JetBrains Mono, monospace" font-size="10.5">
+                Host Port :3000
+              </text>
+              <text x="822" y="202" text-anchor="middle" fill="#39c5cf" font-family="JetBrains Mono, monospace" font-size="9.5">
+                http://prometheus:9090
+              </text>
+              <rect x="742" y="214" width="160" height="46" rx="5" fill="#13231b" stroke="#3fb950" stroke-opacity="0.5"></rect>
+              <text x="822" y="232" text-anchor="middle" fill="#3fb950" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600">
+                GF_DATABASE_WAL=true
+              </text>
+              <text x="822" y="248" text-anchor="middle" fill="#8b949e" font-family="JetBrains Mono, monospace" font-size="9.5">
+                BUSY_TIMEOUT=10000
+              </text>
+
+              <!-- Host Persistent Volume Box -->
+              <rect x="480" y="304" width="448" height="38" rx="7" fill="#13231b" stroke="#3fb950" stroke-width="1.5"></rect>
+              <text x="704" y="327" text-anchor="middle" fill="#3fb950" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">
+                Host Volume: /opt/grafana-data (Owner UID:GID 472:472)
+              </text>
+            </g>
+
+            <!-- NODE 4: pizero-pihole (Bottom Right) -->
+            <g id="node-pihole" class="cursor-pointer transition-opacity" onclick="selectScene(2)">
+              <rect x="466" y="398" width="476" height="84" rx="12" fill="#161b22" stroke="#30363d" stroke-width="2"></rect>
+              <circle cx="484" cy="420" r="5" fill="#39c5cf"></circle>
+              <text x="496" y="424" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700">
+                pizero-pihole
+              </text>
+              <text x="615" y="424" fill="#39c5cf" font-family="JetBrains Mono, monospace" font-size="11">
+                192.168.2.148
+              </text>
+              <text x="928" y="424" text-anchor="end" fill="#8b949e" font-size="11">
+                Raspberry Pi Zero W (ARMv6)
+              </text>
+
+              <rect x="482" y="438" width="166" height="30" rx="6" fill="#0d1117" stroke="#30363d"></rect>
+              <text x="565" y="457" text-anchor="middle" fill="#e6edf3" font-family="JetBrains Mono, monospace" font-size="10">
+                Pi-hole v6.5 / FTL v6.8
+              </text>
+
+              <rect x="656" y="438" width="146" height="30" rx="6" fill="#13231b" stroke="#3fb950" stroke-opacity="0.5"></rect>
+              <text x="729" y="457" text-anchor="middle" fill="#3fb950" font-family="JetBrains Mono, monospace" font-size="10">
+                pihole-exporter :9617
+              </text>
+
+              <rect x="810" y="438" width="118" height="30" rx="6" fill="#13231b" stroke="#3fb950" stroke-opacity="0.5"></rect>
+              <text x="869" y="457" text-anchor="middle" fill="#3fb950" font-family="JetBrains Mono, monospace" font-size="10">
+                node :9100
+              </text>
+            </g>
+
+            <!-- Animated Data Packets (Controlled by JS) -->
+            <circle id="pkt-k8s" r="5.5" fill="#58a6ff" opacity="0" class="packet-dot">
+              <animateMotion id="anim-k8s" dur="1.6s" repeatCount="indefinite" path="M 345 155 C 390 155, 420 180, 480 230"></animateMotion>
+            </circle>
+            <circle id="pkt-n8n" r="5.5" fill="#f0883e" opacity="0" class="packet-dot">
+              <animateMotion id="anim-n8n" dur="1.6s" repeatCount="indefinite" path="M 345 385 C 390 385, 420 355, 480 315"></animateMotion>
+            </circle>
+            <circle id="pkt-pihole" r="5.5" fill="#39c5cf" opacity="0" class="packet-dot">
+              <animateMotion id="anim-pihole" dur="1.4s" repeatCount="indefinite" path="M 650 398 L 650 355"></animateMotion>
+            </circle>
+            <circle id="pkt-graf" r="5.5" fill="#3fb950" opacity="0" class="packet-dot">
+              <animateMotion id="anim-graf" dur="1.3s" repeatCount="indefinite" path="M 665 222 L 730 222"></animateMotion>
+            </circle>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Synchronized Subtitle & Narration Bar -->
+      <div class="border-t border-borderSubtle bg-[#0d1117] px-4 py-4 sm:px-6">
+        <div class="mx-auto max-w-4xl">
+          <div class="mb-1.5 flex items-center justify-between">
+            <span id="sceneTitle" class="font-mono text-xs font-bold uppercase tracking-wider text-accentBlue">SCENE 1: SYSTEM ARCHITECTURE AND NODE ISOLATION</span>
+            <span id="sceneTimer" class="font-mono text-xs text-slate-400">00:00 / 00:35</span>
+          </div>
+          <p id="sceneSubtitle" class="min-h-[3.25rem] rounded-lg border border-borderSubtle bg-surface px-4 py-3 text-sm leading-relaxed text-slate-100 sm:text-base">This system uses four Raspberry Pi boards on LAN 192.168.2.0/24. Each board runs a separate workload to prevent microSD storage overload.</p>
+        </div>
+      </div>
+
+      <!-- Video-Style Player Controls & Progress Bar -->
+      <div class="border-t border-borderSubtle bg-surface px-4 py-3 sm:px-6">
+        <div class="mx-auto flex max-w-4xl flex-col gap-3">
+          <!-- Scrubber Progress Bar -->
+          <div class="relative h-2 w-full cursor-pointer overflow-hidden rounded-full bg-canvas" id="progressTrack" title="Click to jump to scene">
+            <div id="progressFill" class="h-full w-0 bg-gradient-to-r from-blue-500 to-emerald-400 transition-all duration-300"></div>
+          </div>
+
+          <!-- Buttons Row -->
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <button id="prevBtn" type="button" class="rounded-lg border border-borderSubtle bg-canvas px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:border-slate-500 hover:text-white">
+                ← Prev
+              </button>
+              <button id="playPauseBtn" type="button" class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-500">
+                <span id="playPauseIcon">&#10074;&#10074;</span>
+                <span id="playPauseText">Pause</span>
+              </button>
+              <button id="nextBtn" type="button" class="rounded-lg border border-borderSubtle bg-canvas px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:border-slate-500 hover:text-white">
+                Next →
+              </button>
+              <button id="resetBtn" type="button" class="rounded-lg border border-borderSubtle bg-canvas px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:text-white">
+                Reset
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2 text-xs text-slate-400">
+              <span>Click any node card in the diagram to inspect its step.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: System Overview (ASD-STE100) -->
+    <section class="rounded-xl border border-borderSubtle bg-surface p-6">
+      <div class="mb-4 flex items-center justify-between border-b border-borderSubtle pb-3">
+        <h2 class="text-lg font-bold text-white">1. System Overview</h2>
+        <span class="font-mono text-xs text-slate-400">REF: STE-OVERVIEW-01</span>
+      </div>
+      <div class="grid gap-4 text-sm leading-relaxed text-slate-200 md:grid-cols-2">
+        <div class="space-y-3">
+          <p>
+            This home lab runs container orchestration, security checks, workflow automation, DNS filtering, and central monitoring across four Raspberry Pi boards.
+          </p>
+          <p>
+            Each board operates on local network <code class="rounded bg-canvas px-1.5 py-0.5 font-mono text-xs text-accentBlue">192.168.2.0/24</code>. Physical board separation keeps heavy disk writes from slowing down other services.
+          </p>
+        </div>
+        <div class="space-y-3">
+          <p>
+            Each node uses a dedicated operator account without root privileges (<code class="rounded bg-canvas px-1.5 py-0.5 font-mono text-xs text-accentGreen">k8sops</code>, <code class="rounded bg-canvas px-1.5 py-0.5 font-mono text-xs text-accentGreen">gops</code>, and <code class="rounded bg-canvas px-1.5 py-0.5 font-mono text-xs text-accentGreen">n8nops</code>).
+          </p>
+          <p>
+            Central <code class="rounded bg-canvas px-1.5 py-0.5 font-mono text-xs text-accentOrange">Prometheus</code> collects telemetry from five endpoints every 30 seconds. <code class="rounded bg-canvas px-1.5 py-0.5 font-mono text-xs text-accentBlue">Grafana</code> shows system health on port <code class="rounded bg-canvas px-1.5 py-0.5 font-mono text-xs">3000</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Hardware & Network Inventory Table -->
+    <section class="rounded-xl border border-borderSubtle bg-surface p-6">
+      <div class="mb-4 flex items-center justify-between border-b border-borderSubtle pb-3">
+        <h2 class="text-lg font-bold text-white">2. Hardware and Network Inventory</h2>
+        <span class="font-mono text-xs text-slate-400">REF: STE-INVENTORY-02</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b border-borderSubtle bg-canvas/70 font-mono text-xs uppercase text-slate-300">
+              <th class="px-4 py-3">Node Hostname</th>
+              <th class="px-4 py-3">Hardware and Storage</th>
+              <th class="px-4 py-3">IP Address</th>
+              <th class="px-4 py-3">Operator</th>
+              <th class="px-4 py-3">Installed Software</th>
+              <th class="px-4 py-3">Network Ports</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-borderSubtle text-slate-200">
+            <tr class="hover:bg-surfaceHover/60">
+              <td class="px-4 py-3 font-mono font-semibold text-accentBlue">microk8sMaster</td>
+              <td class="px-4 py-3">Raspberry Pi 5<br><span class="text-xs text-slate-400">Ubuntu 24.04 LTS, V30 A2 SD card</span></td>
+              <td class="px-4 py-3 font-mono text-xs">192.168.2.174</td>
+              <td class="px-4 py-3 font-mono text-xs text-accentGreen">k8sops</td>
+              <td class="px-4 py-3">MicroK8s v1.35.6, Kyverno, Trivy, <code class="font-mono text-xs">kube-state-metrics</code>, <code class="font-mono text-xs">node_exporter</code></td>
+              <td class="px-4 py-3 font-mono text-xs">:9100<br>:30808</td>
+            </tr>
+            <tr class="hover:bg-surfaceHover/60">
+              <td class="px-4 py-3 font-mono font-semibold text-accentGreen">ubuntu-Host</td>
+              <td class="px-4 py-3">Raspberry Pi 4<br><span class="text-xs text-slate-400">Ubuntu LTS, /opt/grafana-data (UID 472:472)</span></td>
+              <td class="px-4 py-3 font-mono text-xs">192.168.2.176</td>
+              <td class="px-4 py-3 font-mono text-xs text-accentGreen">gops</td>
+              <td class="px-4 py-3">Grafana OSS (<code class="font-mono text-xs">grafana-sandbox</code>), Prometheus (<code class="font-mono text-xs">observability_default</code>)</td>
+              <td class="px-4 py-3 font-mono text-xs">:3000<br>:9090</td>
+            </tr>
+            <tr class="hover:bg-surfaceHover/60">
+              <td class="px-4 py-3 font-mono font-semibold text-accentOrange">aiagent-n8n</td>
+              <td class="px-4 py-3">Raspberry Pi 4<br><span class="text-xs text-slate-400">Ubuntu LTS</span></td>
+              <td class="px-4 py-3 font-mono text-xs">192.168.2.167</td>
+              <td class="px-4 py-3 font-mono text-xs text-accentGreen">n8nops</td>
+              <td class="px-4 py-3"><code class="font-mono text-xs">n8n</code> workflow container, <code class="font-mono text-xs">node_exporter</code></td>
+              <td class="px-4 py-3 font-mono text-xs">:5678<br>:9100</td>
+            </tr>
+            <tr class="hover:bg-surfaceHover/60">
+              <td class="px-4 py-3 font-mono font-semibold text-accentTeal">pizero-pihole</td>
+              <td class="px-4 py-3">Raspberry Pi Zero W<br><span class="text-xs text-slate-400">Raspberry Pi OS (ARMv6)</span></td>
+              <td class="px-4 py-3 font-mono text-xs">192.168.2.148</td>
+              <td class="px-4 py-3 font-mono text-xs text-slate-400">system</td>
+              <td class="px-4 py-3">Pi-hole Core v6.5 / FTL v6.8, <code class="font-mono text-xs">pihole-exporter</code> (<code class="font-mono text-xs">linux_armv6</code>), <code class="font-mono text-xs">node_exporter</code></td>
+              <td class="px-4 py-3 font-mono text-xs">:9617<br>:9100</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Operating & Maintenance Procedures (Imperative ASD-STE100 Steps) -->
+    <section class="rounded-xl border border-borderSubtle bg-surface p-6">
+      <div class="mb-4 flex items-center justify-between border-b border-borderSubtle pb-3">
+        <h2 class="text-lg font-bold text-white">3. Operating and Maintenance Procedures</h2>
+        <span class="font-mono text-xs text-slate-400">REF: STE-PROC-03</span>
+      </div>
+
+      <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Procedure A -->
+        <div class="rounded-lg border border-borderSubtle bg-canvas p-4">
+          <h3 class="mb-2 font-mono text-xs font-bold uppercase tracking-wider text-accentBlue">
+            3.1 Prepare Control Plane and Security Rules (microk8sMaster)
+          </h3>
+          <ol class="list-decimal space-y-2 pl-5 text-sm text-slate-200">
+            <li>Install Ubuntu 24.04 LTS on a V30 A2 microSD card.</li>
+            <li>Install MicroK8s v1.35.6 and enable <code class="font-mono text-xs text-slate-300">dns</code>, <code class="font-mono text-xs text-slate-300">hostpath-storage</code>, <code class="font-mono text-xs text-slate-300">metrics-server</code>, and <code class="font-mono text-xs text-slate-300">rbac</code>.</li>
+            <li>Create three namespaces: <code class="font-mono text-xs text-slate-300">cka-lab</code>, <code class="font-mono text-xs text-slate-300">devsecops</code>, and <code class="font-mono text-xs text-slate-300">monitoring</code>.</li>
+            <li>Install Kyverno and apply policy <code class="font-mono text-xs text-slate-300">disallow-latest-tag</code> to block unpinned <code class="font-mono text-xs text-slate-300">:latest</code> container images.</li>
+            <li>Install Trivy to scan container images for high and critical vulnerabilities.</li>
+            <li>Expose <code class="font-mono text-xs text-slate-300">kube-state-metrics</code> on NodePort <code class="font-mono text-xs text-slate-300">30808</code> and verify <code class="font-mono text-xs text-slate-300">node_exporter</code> on port <code class="font-mono text-xs text-slate-300">9100</code>.</li>
+          </ol>
+        </div>
+
+        <!-- Procedure B -->
+        <div class="rounded-lg border border-borderSubtle bg-canvas p-4">
+          <h3 class="mb-2 font-mono text-xs font-bold uppercase tracking-wider text-accentTeal">
+            3.2 Configure Edge DNS Exporters (pizero-pihole)
+          </h3>
+          <ol class="list-decimal space-y-2 pl-5 text-sm text-slate-200">
+            <li>Download the <code class="font-mono text-xs text-slate-300">linux-armv6</code> release of <code class="font-mono text-xs text-slate-300">node_exporter</code> and install it as a <code class="font-mono text-xs text-slate-300">systemd</code> service on port <code class="font-mono text-xs text-slate-300">9100</code>.</li>
+            <li>Download the <code class="font-mono text-xs text-slate-300">linux_armv6</code> binary of <code class="font-mono text-xs text-slate-300">pihole-exporter</code>.</li>
+            <li>Set executable permissions on <code class="font-mono text-xs text-slate-300">/usr/local/bin/pihole_exporter</code> with <code class="font-mono text-xs text-slate-300">chmod +x</code>.</li>
+            <li>Start <code class="font-mono text-xs text-slate-300">pihole-exporter</code> and verify DNS metrics at <code class="font-mono text-xs text-slate-300">http://192.168.2.148:9617/metrics</code>.</li>
+          </ol>
+        </div>
+
+        <!-- Procedure C -->
+        <div class="rounded-lg border border-borderSubtle bg-canvas p-4">
+          <h3 class="mb-2 font-mono text-xs font-bold uppercase tracking-wider text-accentGreen">
+            3.3 Start Observability Hub (ubuntu-Host)
+          </h3>
+          <ol class="list-decimal space-y-2 pl-5 text-sm text-slate-200">
+            <li>Create host directory <code class="font-mono text-xs text-slate-300">/opt/grafana-data</code> and set owner UID:GID to <code class="font-mono text-xs text-slate-300">472:472</code>.</li>
+            <li>Set <code class="font-mono text-xs text-slate-300">GF_DATABASE_WAL=true</code> and <code class="font-mono text-xs text-slate-300">GF_DATABASE_BUSY_TIMEOUT=10000</code> in <code class="font-mono text-xs text-slate-300">docker-compose.yml</code>.</li>
+            <li>Set Prometheus scrape interval to <code class="font-mono text-xs text-slate-300">30s</code> and cap storage retention at <code class="font-mono text-xs text-slate-300">7d</code> or <code class="font-mono text-xs text-slate-300">1GB</code>.</li>
+            <li>Run <code class="font-mono text-xs text-slate-300">docker compose up -d</code> as operator <code class="font-mono text-xs text-slate-300">gops</code> in <code class="font-mono text-xs text-slate-300">/home/gops/observability</code>.</li>
+            <li>Connect Grafana to Prometheus through internal bridge DNS URL <code class="font-mono text-xs text-slate-300">http://prometheus:9090</code>.</li>
+          </ol>
+        </div>
+
+        <!-- Procedure D -->
+        <div class="rounded-lg border border-borderSubtle bg-canvas p-4">
+          <h3 class="mb-2 font-mono text-xs font-bold uppercase tracking-wider text-accentOrange">
+            3.4 Verify Target Health
+          </h3>
+          <ol class="list-decimal space-y-2 pl-5 text-sm text-slate-200">
+            <li>Open <code class="font-mono text-xs text-slate-300">http://192.168.2.176:9090/targets</code> in a web browser.</li>
+            <li>Confirm all five scrape targets show state <code class="font-mono text-xs text-accentGreen">UP</code>.</li>
+            <li>Open Grafana at <code class="font-mono text-xs text-slate-300">http://192.168.2.176:3000</code>.</li>
+            <li>Inspect CPU load, RAM use, microSD disk busy time, pod counts, and Pi-hole block rates.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: Fault Isolation & Corrective Actions Table -->
+    <section class="rounded-xl border border-borderSubtle bg-surface p-6">
+      <div class="mb-4 flex items-center justify-between border-b border-borderSubtle pb-3">
+        <h2 class="text-lg font-bold text-white">4. Fault Isolation and Corrective Actions</h2>
+        <span class="font-mono text-xs text-slate-400">REF: STE-FAULT-04</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b border-borderSubtle bg-canvas/70 font-mono text-xs uppercase text-slate-300">
+              <th class="px-4 py-3">Fault Condition</th>
+              <th class="px-4 py-3">Probable Cause</th>
+              <th class="px-4 py-3">Corrective Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-borderSubtle text-slate-200">
+            <tr class="hover:bg-surfaceHover/60">
+              <td class="px-4 py-3 font-medium text-white">MicroK8s API server freezes under load on <code class="font-mono text-xs text-accentBlue">microk8sMaster</code></td>
+              <td class="px-4 py-3">Slow random 4K write speed on standard microSD card delays <code class="font-mono text-xs">kine</code> database commits.</td>
+              <td class="px-4 py-3">Install Ubuntu 24.04 LTS and MicroK8s on a V30 A2-rated microSD card.</td>
+            </tr>
+            <tr class="hover:bg-surfaceHover/60">
+              <td class="px-4 py-3 font-medium text-white">Grafana web page locks with <code class="font-mono text-xs text-accentOrange">SQLITE_BUSY</code> error</td>
+              <td class="px-4 py-3">Concurrent alert and dashboard writes lock <code class="font-mono text-xs">grafana.db</code> on microSD storage.</td>
+              <td class="px-4 py-3">Enable SQLite WAL mode (<code class="font-mono text-xs">GF_DATABASE_WAL=true</code>) and set <code class="font-mono text-xs">GF_DATABASE_BUSY_TIMEOUT=10000</code>.</td>
+            </tr>
+            <tr class="hover:bg-surfaceHover/60">
+              <td class="px-4 py-3 font-medium text-white">Grafana fails to connect at legacy port <code class="font-mono text-xs">30678</code></td>
+              <td class="px-4 py-3">Docker Compose binds Grafana to host port <code class="font-mono text-xs">3000</code> instead of legacy Kubernetes NodePort <code class="font-mono text-xs">30678</code>.</td>
+              <td class="px-4 py-3">Connect to <code class="font-mono text-xs">http://192.168.2.176:3000</code> and route internal queries to <code class="font-mono text-xs">http://prometheus:9090</code>.</td>
+            </tr>
+            <tr class="hover:bg-surfaceHover/60">
+              <td class="px-4 py-3 font-medium text-white"><code class="font-mono text-xs">pihole-exporter</code> fails to start on <code class="font-mono text-xs text-accentTeal">pizero-pihole</code></td>
+              <td class="px-4 py-3">ARM64 or ARMv7 binary cannot run on the Raspberry Pi Zero W ARMv6 processor.</td>
+              <td class="px-4 py-3">Replace binary with the <code class="font-mono text-xs">linux_armv6</code> build and run <code class="font-mono text-xs">chmod +x</code>.</td>
+            </tr>
+            <tr class="hover:bg-surfaceHover/60">
+              <td class="px-4 py-3 font-medium text-white"><code class="font-mono text-xs">sudo ufw status</code> fails for operator <code class="font-mono text-xs text-accentGreen">gops</code></td>
+              <td class="px-4 py-3">Operator <code class="font-mono text-xs">gops</code> has no root privileges by design.</td>
+              <td class="px-4 py-3">Run host firewall checks with administrator account <code class="font-mono text-xs">ubuntu</code>. Keep container tasks under <code class="font-mono text-xs">gops</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 5: ASD-STE100 Compliance Note -->
+    <footer class="rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-5">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-accentGreen">
+            ASD-STE100 Specification Note
+          </h3>
+          <p class="mt-1 text-xs leading-relaxed text-slate-300">
+            This manual follows ASD-STE100 (Simplified Technical English) rules: active voice, imperative verbs for procedures, one instruction per sentence, maximum 20–25 words per sentence, and approved technical vocabulary without ambiguous synonyms.
+          </p>
+        </div>
+        <div class="shrink-0 font-mono text-xs text-slate-400">
+          Repo: <span class="text-slate-200">zenzired/homelab-observability-devsecops</span>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    // Scene definitions strictly adhering to ASD-STE100 rules
+    const SCENES = [
+      {
+        title: "SCENE 1: SYSTEM ARCHITECTURE AND NODE ISOLATION",
+        subtitle: "This system uses four Raspberry Pi boards on LAN 192.168.2.0/24. Each board runs a separate workload to prevent microSD storage overload.",
+        duration: 7,
+        highlightNodes: ["node-k8s", "node-obs", "node-n8n", "node-pihole"],
+        activePaths: [],
+        activePackets: []
+      },
+      {
+        title: "SCENE 2: CONTROL PLANE AND DEVSECOPS GUARDRAILS",
+        subtitle: "microk8sMaster runs MicroK8s v1.35.6 on a fast V30 A2 SD card. Kyverno blocks unpinned :latest image tags, and Trivy scans containers for vulnerabilities.",
+        duration: 7,
+        highlightNodes: ["node-k8s"],
+        activePaths: [],
+        activePackets: []
+      },
+      {
+        title: "SCENE 3: EDGE DNS AND HOST TELEMETRY EXPORTERS",
+        subtitle: "pizero-pihole runs ARMv6 exporters on ports 9617 and 9100. aiagent-n8n runs workflow automation on port 5678 and node_exporter on port 9100.",
+        duration: 7,
+        highlightNodes: ["node-pihole", "node-n8n"],
+        activePaths: [],
+        activePackets: []
+      },
+      {
+        title: "SCENE 4: CENTRAL PROMETHEUS 30-SECOND SCRAPE CYCLE",
+        subtitle: "Prometheus on ubuntu-Host collects metrics from all five endpoints every 30 seconds. Storage retention stops at 7 days or 1 GB to protect the SD card.",
+        duration: 7,
+        highlightNodes: ["node-obs", "node-k8s", "node-n8n", "node-pihole"],
+        activePaths: ["path-prom-k8s", "path-prom-n8n", "path-prom-pihole"],
+        activePackets: ["pkt-k8s", "pkt-n8n", "pkt-pihole"]
+      },
+      {
+        title: "SCENE 5: SQLITE WAL PROTECTION AND GRAFANA VISUALIZATION",
+        subtitle: "Grafana queries http://prometheus:9090 through Docker bridge DNS. SQLite WAL mode prevents database locks in /opt/grafana-data.",
+        duration: 7,
+        highlightNodes: ["node-obs"],
+        activePaths: ["path-graf-prom", "path-graf-vol"],
+        activePackets: ["pkt-graf"]
+      }
+    ];
+
+    let currentScene = 0;
+    let isPlaying = true;
+    let elapsedInScene = 0;
+    const TICK_MS = 250;
+    const TOTAL_DURATION = SCENES.reduce((acc, s) => acc + s.duration, 0);
+
+    // DOM Elements
+    const sceneBadge = document.getElementById("sceneBadge");
+    const sceneTitle = document.getElementById("sceneTitle");
+    const sceneSubtitle = document.getElementById("sceneSubtitle");
+    const sceneTimer = document.getElementById("sceneTimer");
+    const progressFill = document.getElementById("progressFill");
+    const progressTrack = document.getElementById("progressTrack");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const playPauseIcon = document.getElementById("playPauseIcon");
+    const playPauseText = document.getElementById("playPauseText");
+    const liveIndicator = document.getElementById("liveIndicator");
+    const scenePills = document.querySelectorAll(".scene-pill");
+
+    const ALL_NODES = ["node-k8s", "node-obs", "node-n8n", "node-pihole"];
+    const ALL_PATHS = ["path-prom-k8s", "path-prom-n8n", "path-prom-pihole", "path-graf-prom", "path-graf-vol"];
+    const ALL_PACKETS = ["pkt-k8s", "pkt-n8n", "pkt-pihole", "pkt-graf"];
+
+    function formatSeconds(sec) {
+      const s = Math.floor(sec);
+      const mins = String(Math.floor(s / 60)).padStart(2, "0");
+      const secs = String(s % 60).padStart(2, "0");
+      return `${mins}:${secs}`;
+    }
+
+    function renderScene(index) {
+      currentScene = index;
+      const scene = SCENES[currentScene];
+
+      // Update text & badges
+      sceneBadge.textContent = `Scene ${currentScene + 1} / ${SCENES.length}`;
+      sceneTitle.textContent = scene.title;
+      sceneSubtitle.textContent = scene.subtitle;
+
+      // Update pill highlights
+      scenePills.forEach((pill, idx) => {
+        if (idx === currentScene) {
+          pill.className = "scene-pill rounded-md px-2.5 py-1 font-mono text-xs transition bg-blue-600 text-white font-semibold";
+        } else {
+          pill.className = "scene-pill rounded-md px-2.5 py-1 font-mono text-xs transition bg-canvas text-slate-400 hover:text-white";
+        }
+      });
+
+      // Update SVG node highlights
+      ALL_NODES.forEach((id) => {
+        const el = document.getElementById(id);
+        const rect = el.querySelector("rect");
+        if (scene.highlightNodes.includes(id)) {
+          el.style.opacity = "1";
+          rect.setAttribute("stroke", "#58a6ff");
+          rect.classList.add("node-highlight");
+        } else {
+          el.style.opacity = "0.45";
+          rect.setAttribute("stroke", "#30363d");
+          rect.classList.remove("node-highlight");
+        }
+      });
+
+      // Update SVG connection paths
+      ALL_PATHS.forEach((id) => {
+        const pathEl = document.getElementById(id);
+        if (scene.activePaths.includes(id)) {
+          pathEl.setAttribute("stroke", id === "path-graf-vol" ? "#3fb950" : id === "path-graf-prom" ? "#f0883e" : "#58a6ff");
+          pathEl.setAttribute("stroke-width", "3");
+          pathEl.classList.add("flow-line-active");
+        } else {
+          pathEl.setAttribute("stroke", "#30363d");
+          pathEl.setAttribute("stroke-width", "2");
+          pathEl.classList.remove("flow-line-active");
+        }
+      });
+
+      // Update animated SVG packets
+      ALL_PACKETS.forEach((id) => {
+        const pkt = document.getElementById(id);
+        pkt.setAttribute("opacity", scene.activePackets.includes(id) ? "1" : "0");
+      });
+
+      updateProgressUI();
+    }
+
+    function updateProgressUI() {
+      const priorSeconds = SCENES.slice(0, currentScene).reduce((acc, s) => acc + s.duration, 0);
+      const currentTotal = Math.min(priorSeconds + elapsedInScene, TOTAL_DURATION);
+      const pct = (currentTotal / TOTAL_DURATION) * 100;
+      progressFill.style.width = `${pct}%`;
+      sceneTimer.textContent = `${formatSeconds(currentTotal)} / ${formatSeconds(TOTAL_DURATION)}`;
+    }
+
+    function selectScene(index) {
+      elapsedInScene = 0;
+      renderScene(index);
+    }
+
+    function setPlayingState(play) {
+      isPlaying = play;
+      if (isPlaying) {
+        playPauseIcon.innerHTML = "&#10074;&#10074;";
+        playPauseText.textContent = "Pause";
+        liveIndicator.classList.add("animate-pulse", "bg-accentGreen");
+        liveIndicator.classList.remove("bg-slate-500");
+      } else {
+        playPauseIcon.innerHTML = "&#9654;";
+        playPauseText.textContent = "Play";
+        liveIndicator.classList.remove("animate-pulse", "bg-accentGreen");
+        liveIndicator.classList.add("bg-slate-500");
+      }
+    }
+
+    // Playback loop
+    setInterval(() => {
+      if (!isPlaying) return;
+      elapsedInScene += TICK_MS / 1000;
+      if (elapsedInScene >= SCENES[currentScene].duration) {
+        elapsedInScene = 0;
+        const nextIndex = (currentScene + 1) % SCENES.length;
+        renderScene(nextIndex);
+      } else {
+        updateProgressUI();
+      }
+    }, TICK_MS);
+
+    // Event listeners
+    playPauseBtn.addEventListener("click", () => setPlayingState(!isPlaying));
+
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      elapsedInScene = 0;
+      const prevIndex = (currentScene - 1 + SCENES.length) % SCENES.length;
+      renderScene(prevIndex);
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      elapsedInScene = 0;
+      const nextIndex = (currentScene + 1) % SCENES.length;
+      renderScene(nextIndex);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      elapsedInScene = 0;
+      renderScene(0);
+      setPlayingState(true);
+    });
+
+    scenePills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        const idx = Number(pill.getAttribute("data-scene"));
+        selectScene(idx);
+      });
+    });
+
+    progressTrack.addEventListener("click", (e) => {
+      const rect = progressTrack.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const targetScene = Math.min(SCENES.length - 1, Math.floor(ratio * SCENES.length));
+      selectScene(targetScene);
+    });
+
+    // Initialize first scene
+    renderScene(0);
+  </script>
+
+</body>
+</html>
