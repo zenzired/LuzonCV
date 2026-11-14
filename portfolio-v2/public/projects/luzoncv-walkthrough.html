@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LuzonCV Full-Stack Azure Portfolio Architecture</title>
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS & HIGH-CONTRAST AEROSPACE / CLOUD TECHNICAL THEME
+       Strictly self-contained inline CSS — zero external CDN dependencies
+       ========================================================================== */
+    :root {
+      --bg-canvas: #060b14;
+      --bg-panel: #0f172a;
+      --bg-card: #131c31;
+      --bg-elevated: #1e293b;
+      --border-subtle: rgba(148, 163, 184, 0.16);
+      --border-strong: rgba(148, 163, 184, 0.3);
+
+      /* Semantic Subsystem Accents */
+      --sky: #38bdf8;         /* Frontend & Edge CDN */
+      --sky-dim: rgba(56, 189, 248, 0.15);
+      --sky-glow: rgba(56, 189, 248, 0.4);
+
+      --emerald: #34d399;     /* Verification, CI/CD & Production */
+      --emerald-dim: rgba(52, 211, 153, 0.15);
+      --emerald-glow: rgba(52, 211, 153, 0.4);
+
+      --amber: #fbbf24;       /* Serverless API & Email Delivery */
+      --amber-dim: rgba(251, 191, 36, 0.15);
+      --amber-glow: rgba(251, 191, 36, 0.4);
+
+      --purple: #a78bfa;      /* DNS, TLS & SEO Discovery */
+      --purple-dim: rgba(167, 139, 250, 0.15);
+      --purple-glow: rgba(167, 139, 250, 0.4);
+
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-canvas);
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.06), transparent 35%),
+        radial-gradient(circle at 85% 20%, rgba(167, 139, 250, 0.06), transparent 35%),
+        linear-gradient(rgba(148, 163, 184, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.25rem 1.25rem 4rem;
+    }
+
+    /* ==========================================================================
+       TOP HEADER BAR & ACTION CONTROLS
+       ========================================================================== */
+    .top-header {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.15rem 1.4rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .top-header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--purple), var(--sky), var(--amber), var(--emerald));
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .brand-title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .brand-title {
+      font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: var(--text-primary);
+    }
+
+    
+
+    .brand-subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      padding: 0.55rem 0.9rem;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      border-color: var(--sky);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+        /* ==========================================================================
+       HERO SECTION: INTERACTIVE ANIMATED ARCHITECTURE & WALKTHROUGH PLAYER
+       ========================================================================== */
+    .player-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.4rem;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.65);
+    }
+
+    .panel-top-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .fig-tag {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      background: var(--sky-dim);
+      color: var(--sky);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+    }
+
+    /* Subsystem Color Legend */
+    .layer-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .dot-swatch {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    /* Video-like Controls */
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .control-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .ctrl-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.48rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .ctrl-btn:hover:not(:disabled) {
+      border-color: var(--sky);
+      color: var(--sky);
+    }
+
+    .ctrl-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .ctrl-btn.play-primary {
+      background: var(--sky);
+      color: #082f49;
+      border-color: var(--sky);
+      box-shadow: 0 0 16px var(--sky-glow);
+    }
+
+    .ctrl-btn.play-primary:hover {
+      background: #7dd3fc;
+      color: #082f49;
+    }
+
+    /* Stage Selector Pills */
+    .stage-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .stage-tab {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.38rem 0.65rem;
+      border-radius: 8px;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .stage-tab:hover {
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+    }
+
+    .stage-tab.active {
+      background: var(--sky-dim);
+      color: var(--sky);
+      border-color: var(--sky);
+      font-weight: 700;
+    }
+
+    .stage-tab.done {
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--emerald);
+    }
+
+    /* Progress Bar */
+    .timeline-track {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 1.15rem;
+    }
+
+    .timeline-fill {
+      height: 100%;
+      width: 14.28%;
+      background: linear-gradient(90deg, var(--purple), var(--sky), var(--amber), var(--emerald));
+      transition: width 0.35s ease;
+    }
+
+    /* Interactive Diagram & Inspector Split Layout */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.15rem;
+    }
+
+    @media (min-width: 1024px) {
+      .workspace-grid {
+        grid-template-columns: 1.65fr 1fr;
+        align-items: stretch;
+      }
+    }
+
+    .svg-frame {
+      background: #070d19;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 0.65rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .arch-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* SVG Node & Connector Animations */
+    .arch-node {
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .node-rect {
+      fill: #11192c;
+      stroke: #334155;
+      stroke-width: 2;
+      rx: 11;
+      transition: all 0.28s ease;
+    }
+
+    .arch-node:hover .node-rect {
+      stroke: #94a3b8;
+    }
+
+    .arch-node.active[data-accent="purple"] .node-rect {
+      fill: #1c1736;
+      stroke: var(--purple);
+      stroke-width: 3;
+      filter: drop-shadow(0 0 12px var(--purple-glow));
+    }
+
+    .arch-node.active[data-accent="sky"] .node-rect {
+      fill: #10263e;
+      stroke: var(--sky);
+      stroke-width: 3;
+      filter: drop-shadow(0 0 12px var(--sky-glow));
+    }
+
+    .arch-node.active[data-accent="amber"] .node-rect {
+      fill: #292011;
+      stroke: var(--amber);
+      stroke-width: 3;
+      filter: drop-shadow(0 0 12px var(--amber-glow));
+    }
+
+    .arch-node.active[data-accent="emerald"] .node-rect {
+      fill: #0f2922;
+      stroke: var(--emerald);
+      stroke-width: 3;
+      filter: drop-shadow(0 0 12px var(--emerald-glow));
+    }
+
+    .arch-node.visited:not(.active) .node-rect {
+      stroke: rgba(52, 211, 153, 0.55);
+    }
+
+    .node-cap {
+      fill: #1e293b;
+      transition: fill 0.28s ease;
+    }
+
+    .arch-node.active[data-accent="purple"] .node-cap { fill: #5b21b6; }
+    .arch-node.active[data-accent="sky"] .node-cap { fill: #0369a1; }
+    .arch-node.active[data-accent="amber"] .node-cap { fill: #b45309; }
+    .arch-node.active[data-accent="emerald"] .node-cap { fill: #047857; }
+
+    .svg-kicker {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      fill: #94a3b8;
+      pointer-events: none;
+    }
+
+    .arch-node.active .svg-kicker {
+      fill: #f8fafc;
+    }
+
+    .svg-title {
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 700;
+      fill: #f8fafc;
+      pointer-events: none;
+    }
+
+    .svg-sub {
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      fill: #cbd5e1;
+      pointer-events: none;
+    }
+
+    .svg-mono {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      fill: #38bdf8;
+      pointer-events: none;
+    }
+
+    .wire-base {
+      fill: none;
+      stroke: #263349;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+    }
+
+    .wire-flow {
+      fill: none;
+      stroke: var(--sky);
+      stroke-width: 2.8;
+      stroke-dasharray: 7 6;
+      stroke-linecap: round;
+      opacity: 0.18;
+      transition: opacity 0.25s ease;
+    }
+
+    .wire-flow.purple { stroke: var(--purple); }
+    .wire-flow.sky { stroke: var(--sky); }
+    .wire-flow.amber { stroke: var(--amber); }
+    .wire-flow.emerald { stroke: var(--emerald); }
+
+    .wire-flow.flowing {
+      opacity: 1;
+      animation: wireMarch 0.9s linear infinite;
+    }
+
+    @keyframes wireMarch {
+      to {
+        stroke-dashoffset: -26;
+      }
+    }
+
+    .data-packet {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .data-packet.visible {
+      opacity: 1;
+    }
+
+    /* Right-Hand / Bottom Synchronized Node & Voiceover Inspector */
+    .caption-drawer {
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.9rem;
+    }
+
+    .drawer-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.65rem;
+    }
+
+    .drawer-stage-badge {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--sky);
+      text-transform: uppercase;
+    }
+
+    .drawer-play-state {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .drawer-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.35;
+    }
+
+    .drawer-voiceover {
+      font-size: 0.94rem;
+      color: var(--text-secondary);
+      background: rgba(6, 11, 20, 0.55);
+      border-left: 3px solid var(--sky);
+      padding: 0.75rem 0.9rem;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .drawer-specs {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .drawer-specs li {
+      font-size: 0.87rem;
+      color: var(--text-secondary);
+      padding-left: 1.1rem;
+      position: relative;
+    }
+
+    .drawer-specs li::before {
+      content: "›";
+      position: absolute;
+      left: 0;
+      color: var(--emerald);
+      font-weight: 700;
+    }
+
+    .drawer-code {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      background: #060b14;
+      color: #7dd3fc;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.65rem 0.8rem;
+      overflow-x: auto;
+    }
+
+    /* ==========================================================================
+       STRUCTURED TECHNICAL MANUAL SECTIONS (SECTIONS 1, 2, 3)
+       ========================================================================== */
+    .manual-section {
+      margin-bottom: 2rem;
+    }
+
+    .sec-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .sec-banner-title {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .sec-num {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.22rem 0.6rem;
+      border-radius: 6px;
+      background: var(--bg-elevated);
+      color: var(--sky);
+      border: 1px solid var(--border-strong);
+    }
+
+    .sec-rule-note {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.15rem;
+    }
+
+    .spec-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .spec-card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .card-title {
+      font-size: 1.03rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .layer-chip {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.18rem 0.5rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .chip-sky { background: var(--sky-dim); color: var(--sky); }
+    .chip-purple { background: var(--purple-dim); color: var(--purple); }
+    .chip-amber { background: var(--amber-dim); color: var(--amber); }
+    .chip-emerald { background: var(--emerald-dim); color: var(--emerald); }
+
+    .spec-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .spec-bullets li {
+      position: relative;
+      padding-left: 1.15rem;
+      font-size: 0.93rem;
+      color: var(--text-secondary);
+    }
+
+    .spec-bullets li::before {
+      content: "▪";
+      position: absolute;
+      left: 0;
+      color: var(--sky);
+    }
+
+    /* Procedural Ordered Lists */
+    .proc-list {
+      list-style: none;
+      counter-reset: proc-step;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .proc-list li {
+      counter-increment: proc-step;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      background: rgba(6, 11, 20, 0.55);
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      padding: 0.68rem 0.85rem;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+    }
+
+    .proc-list li::before {
+      content: counter(proc-step);
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--emerald-dim);
+      border: 1px solid rgba(52, 211, 153, 0.45);
+      color: var(--emerald);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.1rem;
+    }
+
+    .code-block {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      background: #060b14;
+      color: #cbd5e1;
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      padding: 0.8rem;
+      overflow-x: auto;
+      line-height: 1.48;
+    }
+
+    .c-k { color: #38bdf8; }
+    .c-s { color: #34d399; }
+    .c-a { color: #fbbf24; }
+
+    .footer {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 0.85rem 0.75rem 3rem; }
+      .top-header, .player-panel, .spec-card { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- ======================================================================
+         TOP HEADER BAR
+         ====================================================================== -->
+    <header class="top-header">
+      <div class="brand-block">
+        <div class="brand-title-row">
+          <h1 class="brand-title">LUZONCV AZURE PORTFOLIO ARCHITECTURE</h1>
+        </div>
+        <div class="brand-subtitle">
+          SYSTEM SPECIFICATION // DOMAIN: luzon.arcilla.org
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <a href="#interactive-diagram" class="action-btn">Architecture Overview</a>
+        <a href="#full-spec" class="action-btn">Full Spec</a>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         HERO SECTION: INTERACTIVE ANIMATED ARCHITECTURE & WALKTHROUGH PLAYER
+         ====================================================================== -->
+    <section id="interactive-diagram" class="player-panel" aria-label="Interactive System Architecture Player">
+      <div class="panel-top-row">
+        <div class="panel-heading">
+          <span class="fig-tag">FIG 1.0</span>
+          <span>End-to-End Platform &amp; CI/CD Architecture</span>
+        </div>
+        <div class="layer-legend">
+          <span class="legend-item"><span class="dot-swatch" style="background: var(--purple);"></span>DNS &amp; SEO</span>
+          <span class="legend-item"><span class="dot-swatch" style="background: var(--sky);"></span>Edge &amp; Frontend</span>
+          <span class="legend-item"><span class="dot-swatch" style="background: var(--amber);"></span>Serverless &amp; Mail</span>
+          <span class="legend-item"><span class="dot-swatch" style="background: var(--emerald);"></span>CI/CD &amp; Production</span>
+        </div>
+      </div>
+
+      <!-- Video-like Playback Controls -->
+      <div class="controls-bar">
+        <div class="control-cluster">
+          <button type="button" id="playBtn" class="ctrl-btn play-primary">
+            <span id="playBtnIcon">&#9654;</span>
+            <span id="playBtnLabel">Play Walkthrough</span>
+          </button>
+          <button type="button" id="stepBackBtn" class="ctrl-btn">&#9664; Step Back</button>
+          <button type="button" id="stepNextBtn" class="ctrl-btn">Step Forward &#9654;</button>
+        </div>
+        <div class="control-cluster">
+          <button type="button" id="speedToggleBtn" class="ctrl-btn">Speed: 1.0x</button>
+          <button type="button" id="resetPlayerBtn" class="ctrl-btn">Reset</button>
+        </div>
+      </div>
+
+      <!-- 7 Stage Selector Tabs -->
+      <div class="stage-strip" id="stageTabsContainer">
+        <button type="button" class="stage-tab active" data-stage="0">1. Visitor &amp; Edge</button>
+        <button type="button" class="stage-tab" data-stage="1">2. SPA &amp; Routing</button>
+        <button type="button" class="stage-tab" data-stage="2">3. Project Demos</button>
+        <button type="button" class="stage-tab" data-stage="3">4. Contact API</button>
+        <button type="button" class="stage-tab" data-stage="4">5. Email Dispatch</button>
+        <button type="button" class="stage-tab" data-stage="5">6. PR &amp; Staging</button>
+        <button type="button" class="stage-tab" data-stage="6">7. Prod &amp; SEO</button>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="timeline-track">
+        <div class="timeline-fill" id="timelineFill"></div>
+      </div>
+
+      <!-- Split Workspace: Interactive SVG Diagram + Synchronized Technical Inspector -->
+      <div class="workspace-grid">
+        <div class="svg-frame">
+          <svg id="systemSvg" class="arch-svg" viewBox="0 0 820 510" role="img" aria-label="LuzonCV Full-Stack Azure Architecture Diagram">
+            <defs>
+              <marker id="mSlate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
+              </marker>
+              <marker id="mPurple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#a78bfa" />
+              </marker>
+              <marker id="mSky" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8" />
+              </marker>
+              <marker id="mAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#fbbf24" />
+              </marker>
+              <marker id="mEmerald" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399" />
+              </marker>
+            </defs>
+
+            <!-- Background Architectural Tiers -->
+            <rect x="12" y="12" width="796" height="146" rx="12" fill="rgba(167,139,250,0.04)" stroke="rgba(167,139,250,0.16)" />
+            <text x="24" y="30" fill="#a78bfa" font-family="monospace" font-size="10" font-weight="700">TIER 1 // PUBLIC DISCOVERY, DNS &amp; GLOBAL EDGE CDN</text>
+
+            <rect x="12" y="172" width="796" height="156" rx="12" fill="rgba(56,189,248,0.04)" stroke="rgba(56,189,248,0.16)" />
+            <text x="24" y="190" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="700">TIER 2 // REACT FRONTEND, INTERACTIVE DEMOS &amp; SERVERLESS BACKEND</text>
+
+            <rect x="12" y="342" width="796" height="156" rx="12" fill="rgba(52,211,153,0.04)" stroke="rgba(52,211,153,0.16)" />
+            <text x="24" y="360" fill="#34d399" font-family="monospace" font-size="10" font-weight="700">TIER 3 // GITHUB ACTIONS CI/CD &amp; PR STAGING PIPELINE</text>
+
+            <!-- ==================== CONNECTION WIRES ==================== -->
+            <!-- W1: Visitor/DNS (Node 1) -> Azure SWA Edge (Node 2) -->
+            <path class="wire-base" d="M 255 92 L 305 92" marker-end="url(#mSlate)" />
+            <path id="w-dns-edge" class="wire-flow purple" d="M 255 92 L 305 92" marker-end="url(#mPurple)" />
+
+            <!-- W2: Google Search Console (Node 3) <-> Visitor/DNS (Node 1) -->
+            <path class="wire-base" d="M 555 92 L 505 92" marker-end="url(#mSlate)" />
+            <path id="w-seo-dns" class="wire-flow purple" d="M 555 92 L 505 92" marker-end="url(#mPurple)" />
+
+            <!-- W3: Azure SWA Edge (Node 2) -> React SPA (Node 4) -->
+            <path class="wire-base" d="M 355 142 L 155 202" marker-end="url(#mSlate)" />
+            <path id="w-edge-spa" class="wire-flow sky" d="M 355 142 L 155 202" marker-end="url(#mSky)" />
+
+            <!-- W4: Azure SWA Edge (Node 2) -> Static HTML Demos (Node 5) -->
+            <path class="wire-base" d="M 405 142 L 405 202" marker-end="url(#mSlate)" />
+            <path id="w-edge-demo" class="wire-flow sky" d="M 405 142 L 405 202" marker-end="url(#mSky)" />
+
+            <!-- W5: React SPA (Node 4) -> Azure Functions API (Node 6) -->
+            <path class="wire-base" d="M 255 275 L 555 275" marker-end="url(#mSlate)" />
+            <path id="w-spa-api" class="wire-flow amber" d="M 255 275 L 555 275" marker-end="url(#mAmber)" />
+
+            <!-- W6: Azure Functions API (Node 6) -> SendGrid / Graph (Node 7) -->
+            <path class="wire-base" d="M 675 316 L 675 372" marker-end="url(#mSlate)" />
+            <path id="w-api-mail" class="wire-flow amber" d="M 675 316 L 675 372" marker-end="url(#mAmber)" />
+
+            <!-- W7: GitHub PR (Node 8) -> GitHub Actions (Node 9) -->
+            <path class="wire-base" d="M 255 430 L 305 430" marker-end="url(#mSlate)" />
+            <path id="w-git-actions" class="wire-flow emerald" d="M 255 430 L 305 430" marker-end="url(#mEmerald)" />
+
+            <!-- W8: GitHub Actions (Node 9) -> Azure SWA Edge/Staging (Node 2) -->
+            <path class="wire-base" d="M 465 372 L 465 142" marker-end="url(#mSlate)" />
+            <path id="w-actions-swa" class="wire-flow emerald" d="M 465 372 L 465 142" marker-end="url(#mEmerald)" />
+
+            <!-- ==================== ARCHITECTURE NODES ==================== -->
+            <!-- NODE 1: Visitor & Custom DNS -->
+            <g class="arch-node active" id="n-dns" data-stage="0" data-accent="purple" transform="translate(24, 42)">
+              <rect class="node-rect" width="230" height="100" />
+              <path class="node-cap" d="M 11 0 L 219 0 Q 230 0 230 11 L 230 24 L 0 24 L 0 11 Q 0 0 11 0 Z" />
+              <text class="svg-kicker" x="10" y="16">LAYER 01 // VISITOR &amp; DNS</text>
+              <text class="svg-title" x="10" y="43">Recruiter Browser &amp; DNS</text>
+              <text class="svg-sub" x="10" y="61">• HTTPS TLS 1.3 Encryption</text>
+              <text class="svg-sub" x="10" y="77">• Custom CNAME / ALIAS Record</text>
+              <text class="svg-mono" x="10" y="92">https://luzon.arcilla.org</text>
+            </g>
+
+            <!-- NODE 2: Azure SWA Edge CDN -->
+            <g class="arch-node" id="n-edge" data-stage="1" data-accent="sky" transform="translate(306, 42)">
+              <rect class="node-rect" width="198" height="100" />
+              <path class="node-cap" d="M 11 0 L 187 0 Q 198 0 198 11 L 198 24 L 0 24 L 0 11 Q 0 0 11 0 Z" />
+              <text class="svg-kicker" x="10" y="16">LAYER 02 // EDGE CDN</text>
+              <text class="svg-title" x="10" y="43">Azure Static Web Apps</text>
+              <text class="svg-sub" x="10" y="61">• Global Edge Distribution</text>
+              <text class="svg-sub" x="10" y="77">• Routing &amp; Fallback Rules</text>
+              <text class="svg-mono" x="10" y="92">staticwebapp.config.json</text>
+            </g>
+
+            <!-- NODE 3: Google Search Console & SEO -->
+            <g class="arch-node" id="n-seo" data-stage="6" data-accent="purple" transform="translate(556, 42)">
+              <rect class="node-rect" width="236" height="100" />
+              <path class="node-cap" d="M 11 0 L 225 0 Q 236 0 236 11 L 236 24 L 0 24 L 0 11 Q 0 0 11 0 Z" />
+              <text class="svg-kicker" x="10" y="16">LAYER 01B // SEO INDEXING</text>
+              <text class="svg-title" x="10" y="43">Google Search Console</text>
+              <text class="svg-sub" x="10" y="61">• Verified Domain Ownership</text>
+              <text class="svg-sub" x="10" y="77">• Sitemap &amp; Metadata Crawl</text>
+              <text class="svg-mono" x="10" y="92">Search Discovery &amp; Indexing</text>
+            </g>
+
+            <!-- NODE 4: React + Vite SPA -->
+            <g class="arch-node" id="n-spa" data-stage="1" data-accent="sky" transform="translate(24, 204)">
+              <rect class="node-rect" width="230" height="112" />
+              <path class="node-cap" d="M 11 0 L 219 0 Q 230 0 230 11 L 230 24 L 0 24 L 0 11 Q 0 0 11 0 Z" />
+              <text class="svg-kicker" x="10" y="16">LAYER 03A // REACT SPA</text>
+              <text class="svg-title" x="10" y="43">React + Vite + Tailwind</text>
+              <text class="svg-sub" x="10" y="61">• Hero, Experience &amp; Skills</text>
+              <text class="svg-sub" x="10" y="77">• Projects.jsx Tech Filter</text>
+              <text class="svg-sub" x="10" y="93">• Interactive Contact Form</text>
+              <text class="svg-mono" x="10" y="106">portfolio-v2/src/components/</text>
+            </g>
+
+            <!-- NODE 5: Standalone Static HTML Walkthroughs -->
+            <g class="arch-node" id="n-demo" data-stage="2" data-accent="sky" transform="translate(306, 204)">
+              <rect class="node-rect" width="198" height="112" />
+              <path class="node-cap" d="M 11 0 L 187 0 Q 198 0 198 11 L 198 24 L 0 24 L 0 11 Q 0 0 11 0 Z" />
+              <text class="svg-kicker" x="10" y="16">LAYER 03B // STATIC DEMOS</text>
+              <text class="svg-title" x="10" y="43">HTML Walkthroughs</text>
+              <text class="svg-sub" x="10" y="61">• Direct *.html Serving</text>
+              <text class="svg-sub" x="10" y="77">• SPA Fallback Excluded</text>
+              <text class="svg-sub" x="10" y="93">• Zero Token Exposure</text>
+              <text class="svg-mono" x="10" y="106">/projects/*.html</text>
+            </g>
+
+            <!-- NODE 6: Serverless Azure Functions -->
+            <g class="arch-node" id="n-api" data-stage="3" data-accent="amber" transform="translate(556, 204)">
+              <rect class="node-rect" width="236" height="112" />
+              <path class="node-cap" d="M 11 0 L 225 0 Q 236 0 236 11 L 236 24 L 0 24 L 0 11 Q 0 0 11 0 Z" />
+              <text class="svg-kicker" x="10" y="16">LAYER 04 // SERVERLESS API</text>
+              <text class="svg-title" x="10" y="43">Azure Functions Backend</text>
+              <text class="svg-sub" x="10" y="61">• Managed HTTP POST Trigger</text>
+              <text class="svg-sub" x="10" y="77">• Input &amp; Spam Validation</text>
+              <text class="svg-sub" x="10" y="93">• App Settings Secret Store</text>
+              <text class="svg-mono" x="10" y="106">POST /api/contact</text>
+            </g>
+
+            <!-- NODE 7: SendGrid / Microsoft Graph Email Delivery -->
+            <g class="arch-node" id="n-mail" data-stage="4" data-accent="amber" transform="translate(556, 374)">
+              <rect class="node-rect" width="236" height="110" />
+              <path class="node-cap" d="M 11 0 L 225 0 Q 236 0 236 11 L 236 24 L 0 24 L 0 11 Q 0 0 11 0 Z" />
+              <text class="svg-kicker" x="10" y="16">LAYER 05 // EMAIL PIPELINE</text>
+              <text class="svg-title" x="10" y="43">SendGrid / Graph Mail</text>
+              <text class="svg-sub" x="10" y="61">• Authenticated Relay API</text>
+              <text class="svg-sub" x="10" y="77">• Recruiter Inquiry Dispatch</text>
+              <text class="svg-sub" x="10" y="93">• UI Status Confirmation</text>
+              <text class="svg-mono" x="10" y="105">Inbox Delivery + 200 OK</text>
+            </g>
+
+            <!-- NODE 8: GitHub Repository & Branching -->
+            <g class="arch-node" id="n-git" data-stage="5" data-accent="emerald" transform="translate(24, 374)">
+              <rect class="node-rect" width="230" height="110" />
+              <path class="node-cap" d="M 11 0 L 219 0 Q 230 0 230 11 L 230 24 L 0 24 L 0 11 Q 0 0 11 0 Z" />
+              <text class="svg-kicker" x="10" y="16">LAYER 06A // SOURCE CONTROL</text>
+              <text class="svg-title" x="10" y="43">GitHub Repo &amp; PR Flow</text>
+              <text class="svg-sub" x="10" y="61">• Feature Branch (feat/*)</text>
+              <text class="svg-sub" x="10" y="77">• Pull Request Gate to main</text>
+              <text class="svg-sub" x="10" y="93">• Clean Commit History</text>
+              <text class="svg-mono" x="10" y="105">zenzired/LuzonCV</text>
+            </g>
+
+            <!-- NODE 9: GitHub Actions & PR Staging -->
+            <g class="arch-node" id="n-actions" data-stage="5" data-accent="emerald" transform="translate(306, 374)">
+              <rect class="node-rect" width="198" height="110" />
+              <path class="node-cap" d="M 11 0 L 187 0 Q 198 0 198 11 L 198 24 L 0 24 L 0 11 Q 0 0 11 0 Z" />
+              <text class="svg-kicker" x="10" y="16">LAYER 06B // CI/CD ENGINE</text>
+              <text class="svg-title" x="10" y="43">GitHub Actions &amp; Staging</text>
+              <text class="svg-sub" x="10" y="61">• Oryx Automated Build</text>
+              <text class="svg-sub" x="10" y="77">• Isolated PR Staging URL</text>
+              <text class="svg-sub" x="10" y="93">• Auto Slot Cleanup on Merge</text>
+              <text class="svg-mono" x="10" y="105">*-1.azurestaticapps.net</text>
+            </g>
+
+            <!-- Animated Glowing Data Packets -->
+            <circle id="pkt1" class="data-packet" r="6" cx="0" cy="0" fill="#a78bfa" />
+            <circle id="pkt2" class="data-packet" r="6" cx="0" cy="0" fill="#38bdf8" />
+          </svg>
+        </div>
+
+        <!-- Synchronized Stage Narration & Technical Inspector Drawer -->
+        <aside class="caption-drawer" aria-live="polite">
+          <div>
+            <div class="drawer-meta">
+              <span class="drawer-stage-badge" id="drawerStageBadge">STAGE 1 OF 7 // VISITOR &amp; EDGE</span>
+              <span class="drawer-play-state" id="drawerPlayState">Interactive Mode</span>
+            </div>
+            <h2 class="drawer-title" id="drawerTitle" style="margin-top: 0.65rem;">
+              Resolve Custom Domain and Connect to Edge CDN
+            </h2>
+          </div>
+
+          <p class="drawer-voiceover" id="drawerVoiceover">
+            The visitor browser resolves <code>luzon.arcilla.org</code> through DNS and establishes a secure HTTPS connection to Azure Static Web Apps.
+          </p>
+
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+              COMPONENT SPECIFICATIONS:
+            </div>
+            <ul class="drawer-specs" id="drawerSpecsList">
+              <li>Custom DNS records route domain traffic to global Microsoft Azure edge servers.</li>
+              <li>Azure Static Web Apps provisions and renews free TLS certificates automatically.</li>
+              <li>Edge nodes cache static assets near visitors to reduce page load latency.</li>
+            </ul>
+          </div>
+
+          <div class="drawer-code" id="drawerCodeBlock">
+            GET https://luzon.arcilla.org/ -&gt; 200 OK (TLS 1.3 // Azure Edge POP)
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         FULL TECHNICAL MANUAL (SECTIONS 1, 2, AND 3)
+         ====================================================================== -->
+    <div id="full-spec">
+      <!-- SECTION 1: SYSTEM ARCHITECTURE & COMPONENTS -->
+      <section class="manual-section" aria-label="Section 1: System Architecture and Components">
+        <div class="sec-banner">
+          <h2 class="sec-banner-title">
+            <span class="sec-num">SECTION 1</span>
+            <span>System Architecture &amp; Components</span>
+          </h2>
+          <span class="sec-rule-note">Architecture &amp; Subsystem Overview</span>
+        </div>
+
+        <div class="cards-grid">
+          <!-- Card 1.1: Frontend Application -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">1.1 Frontend Application</h3>
+              <span class="layer-chip chip-sky">React + Vite</span>
+            </div>
+            <ul class="spec-bullets">
+              <li>
+                React and Vite build a fast single-page application inside the <code>portfolio-v2</code> directory.
+              </li>
+              <li>
+                Tailwind CSS styles responsive layouts for desktop, tablet, and mobile screens.
+              </li>
+              <li>
+                The <code>Projects.jsx</code> component filters engineering work by cloud, automation, and Kubernetes tags.
+              </li>
+            </ul>
+          </article>
+
+          <!-- Card 1.2: Edge Routing & Static Walkthroughs -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">1.2 Edge Routing &amp; Static Demos</h3>
+              <span class="layer-chip chip-sky">Edge CDN</span>
+            </div>
+            <ul class="spec-bullets">
+              <li>
+                The <code>staticwebapp.config.json</code> file controls URL routing and fallback rules at the edge.
+              </li>
+              <li>
+                Navigation fallback exclusions allow direct browser access to standalone <code>*.html</code> files.
+              </li>
+              <li>
+                The <code>public/projects/</code> folder stores interactive architecture walkthroughs without React router interference.
+              </li>
+            </ul>
+          </article>
+
+          <!-- Card 1.3: Serverless Backend -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">1.3 Serverless Contact Backend</h3>
+              <span class="layer-chip chip-amber">Azure Functions</span>
+            </div>
+            <ul class="spec-bullets">
+              <li>
+                Azure Functions hosts the managed <code>/api/contact</code> HTTP endpoint without dedicated virtual machines.
+              </li>
+              <li>
+                The API handler validates sender fields and blocks malformed or empty form payloads.
+              </li>
+              <li>
+                Serverless scaling allocates compute resources during recruiter visits and reduces idle cost to zero.
+              </li>
+            </ul>
+          </article>
+
+          <!-- Card 1.4: Email Integration -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">1.4 Email Delivery Pipeline</h3>
+              <span class="layer-chip chip-amber">SendGrid / Graph</span>
+            </div>
+            <ul class="spec-bullets">
+              <li>
+                The contact function connects to SendGrid or Microsoft Graph APIs over encrypted HTTPS channels.
+              </li>
+              <li>
+                The mail relay delivers recruiter messages directly to the operator inbox.
+              </li>
+              <li>
+                The API returns an HTTP 200 status so the interface displays delivery confirmation.
+              </li>
+            </ul>
+          </article>
+
+          <!-- Card 1.5: Custom Domain & SEO -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">1.5 Custom Domain &amp; SEO</h3>
+              <span class="layer-chip chip-purple">DNS + Search</span>
+            </div>
+            <ul class="spec-bullets">
+              <li>
+                Custom DNS records bind <code>luzon.arcilla.org</code> to the Azure Static Web Apps endpoint.
+              </li>
+              <li>
+                Google Search Console verifies domain ownership and monitors crawl health.
+              </li>
+              <li>
+                Structured metadata and URL inspection index portfolio pages for technical recruiter searches.
+              </li>
+            </ul>
+          </article>
+
+          <!-- Card 1.6: CI/CD Pipeline -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">1.6 CI/CD &amp; Staging Environments</h3>
+              <span class="layer-chip chip-emerald">GitHub Actions</span>
+            </div>
+            <ul class="spec-bullets">
+              <li>
+                GitHub Actions executes automated builds whenever you open or update a pull request.
+              </li>
+              <li>
+                Azure Static Web Apps creates an isolated staging URL for every open pull request.
+              </li>
+              <li>
+                Merging into <code>main</code> deploys production code and removes the temporary staging environment.
+              </li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- SECTION 2: OPERATIONAL & DEPLOYMENT PROCEDURES -->
+      <section class="manual-section" aria-label="Section 2: Operational and Deployment Procedures">
+        <div class="sec-banner">
+          <h2 class="sec-banner-title">
+            <span class="sec-num">SECTION 2</span>
+            <span>Operational &amp; Deployment Procedures</span>
+          </h2>
+          <span class="sec-rule-note">Standard Operating Procedures</span>
+        </div>
+
+        <div class="cards-grid">
+          <!-- Procedure A -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">Procedure A: Test Changes in Staging</h3>
+              <span class="layer-chip chip-emerald">Workflow</span>
+            </div>
+            <ol class="proc-list">
+              <li>
+                <span>Create a new feature branch from <code>main</code> on your local Git workstation.</span>
+              </li>
+              <li>
+                <span>Commit your tested code changes to the local feature branch.</span>
+              </li>
+              <li>
+                <span>Push the feature branch to the remote GitHub repository.</span>
+              </li>
+              <li>
+                <span>Open a pull request against <code>main</code> to start the GitHub Actions build.</span>
+              </li>
+              <li>
+                <span>Verify all visual layouts and links on the generated Azure staging URL.</span>
+              </li>
+            </ol>
+          </article>
+
+          <!-- Procedure B -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">Procedure B: Add Interactive Walkthrough</h3>
+              <span class="layer-chip chip-sky">Content</span>
+            </div>
+            <ol class="proc-list">
+              <li>
+                <span>Remove all session tokens and external debug scripts from the HTML file.</span>
+              </li>
+              <li>
+                <span>Save the sanitized HTML file inside <code>portfolio-v2/public/projects/</code>.</span>
+              </li>
+              <li>
+                <span>Confirm that <code>staticwebapp.config.json</code> excludes <code>/*.html</code> and <code>/projects/*.html</code> from fallback rewrites.</span>
+              </li>
+              <li>
+                <span>Add the project entry and walkthrough URL to <code>Projects.jsx</code>.</span>
+              </li>
+              <li>
+                <span>Test the walkthrough button in staging to confirm direct HTML loading.</span>
+              </li>
+            </ol>
+          </article>
+
+          <!-- Procedure C -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">Procedure C: Release &amp; Verify Production</h3>
+              <span class="layer-chip chip-purple">Release</span>
+            </div>
+            <ol class="proc-list">
+              <li>
+                <span>Merge the approved pull request into the <code>main</code> branch on GitHub.</span>
+              </li>
+              <li>
+                <span>Delete the remote and local feature branches after the merge completes.</span>
+              </li>
+              <li>
+                <span>Open <code>https://luzon.arcilla.org</code> to verify the live production deployment.</span>
+              </li>
+              <li>
+                <span>Submit a test message through the contact form to verify <code>/api/contact</code> delivery.</span>
+              </li>
+              <li>
+                <span>Request URL indexing in Google Search Console for new public pages.</span>
+              </li>
+            </ol>
+          </article>
+        </div>
+      </section>
+
+      <!-- SECTION 3: SECURITY & COMPLIANCE CONTROLS -->
+      <section class="manual-section" aria-label="Section 3: Security and Compliance Controls">
+        <div class="sec-banner">
+          <h2 class="sec-banner-title">
+            <span class="sec-num">SECTION 3</span>
+            <span>Security &amp; Compliance Controls</span>
+          </h2>
+          <span class="sec-rule-note">Security Baseline // Zero Client-Side Secrets</span>
+        </div>
+
+        <div class="cards-grid">
+          <!-- Control 3.1: Secret Management -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">3.1 Secret Management</h3>
+              <span class="layer-chip chip-amber">Zero Exposure</span>
+            </div>
+            <ul class="spec-bullets">
+              <li>
+                The repository never stores API keys, mail credentials, or deployment tokens in client source files.
+              </li>
+              <li>
+                Azure Static Web Apps injects encrypted application settings into the serverless runtime environment.
+              </li>
+            </ul>
+            <pre class="code-block"><span class="c-k">Client Bundle:</span> Zero secrets in Vite output
+<span class="c-a">Azure Function:</span> process.env.SENDGRID_API_KEY</pre>
+          </article>
+
+          <!-- Control 3.2: HTML Sanitization -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">3.2 Static HTML Sanitization</h3>
+              <span class="layer-chip chip-emerald">Hygiene</span>
+            </div>
+            <ul class="spec-bullets">
+              <li>
+                Operators strip local editor scripts, Firebase tokens, and session identifiers before public commits.
+              </li>
+              <li>
+                Self-contained inline styles and scripts prevent external third-party script injection risks.
+              </li>
+            </ul>
+            <pre class="code-block"><span class="c-s">Audit Check:</span> 0 external CDNs // 0 auth tokens</pre>
+          </article>
+
+          <!-- Control 3.3: Transport & Routing Security -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">3.3 Transport &amp; Routing Security</h3>
+              <span class="layer-chip chip-purple">HTTPS + Fallback</span>
+            </div>
+            <ul class="spec-bullets">
+              <li>
+                Azure Edge redirects all unencrypted HTTP requests to HTTPS automatically.
+              </li>
+              <li>
+                Explicit fallback exclusions prevent unexpected route hijacking while protecting API endpoints.
+              </li>
+            </ul>
+            <pre class="code-block"><span class="c-k">"exclude"</span>: [<span class="c-s">"/assets/*"</span>, <span class="c-s">"/*.html"</span>, <span class="c-s">"/projects/*.html"</span>]</pre>
+          </article>
+
+          <!-- Control 3.4: API Input Validation -->
+          <article class="spec-card">
+            <div class="card-header">
+              <h3 class="card-title">3.4 Serverless Input Validation</h3>
+              <span class="layer-chip chip-sky">API Guard</span>
+            </div>
+            <ul class="spec-bullets">
+              <li>
+                The <code>/api/contact</code> function sanitizes user text and rejects oversized or invalid email fields.
+              </li>
+              <li>
+                Managed CORS policies restrict browser form submissions to authorized portfolio origins.
+              </li>
+            </ul>
+            <pre class="code-block"><span class="c-k">Allowed Origin:</span> https://luzon.arcilla.org</pre>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer">
+      LUZONCV FULL-STACK AZURE PORTFOLIO ARCHITECTURE // SELF-CONTAINED EDITION
+    </footer>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       INTERACTIVE WALKTHROUGH PLAYER & SVG PACKET ENGINE
+       Pure vanilla JavaScript — zero external dependencies
+       ========================================================================== */
+    (function () {
+      "use strict";
+
+      // 7 Complete Walkthrough Stages
+      const WALKTHROUGH_STAGES = [
+        {
+          id: 0,
+          badge: "STAGE 1 OF 7 // VISITOR & EDGE CDN",
+          title: "Resolve Custom Domain and Connect to Edge CDN",
+          voiceover:
+            'The visitor browser resolves <code>luzon.arcilla.org</code> through DNS and establishes a secure HTTPS connection to Azure Static Web Apps.',
+          specs: [
+            'Custom DNS records route domain traffic to global Microsoft Azure edge servers.',
+            'Azure Static Web Apps provisions and renews free TLS certificates automatically.',
+            'Edge nodes cache static assets near visitors to reduce page load latency.'
+          ],
+          code: "GET https://luzon.arcilla.org/ -> 200 OK (TLS 1.3 // Azure Edge POP)",
+          activeNodes: ["n-dns", "n-edge"],
+          visitedNodes: [],
+          activeWires: ["w-dns-edge"],
+          packet1: { wire: "w-dns-edge", color: "#a78bfa" },
+          packet2: null
+        },
+        {
+          id: 1,
+          badge: "STAGE 2 OF 7 // FRONTEND SPA & ROUTING",
+          title: "Serve React Application and Apply Routing Rules",
+          voiceover:
+            'The edge server delivers the React and Vite bundle while <code>staticwebapp.config.json</code> manages navigation fallback routes.',
+          specs: [
+            'Tailwind CSS renders responsive portfolio sections across mobile and desktop viewports.',
+            'Navigation fallback rewrites standard application routes to <code>/index.html</code>.',
+            'Exclusion patterns bypass the React router for standalone <code>*.html</code> files.'
+          ],
+          code: 'navigationFallback: { rewrite: "/index.html", exclude: ["/*.html", "/projects/*.html"] }',
+          activeNodes: ["n-edge", "n-spa"],
+          visitedNodes: ["n-dns"],
+          activeWires: ["w-edge-spa"],
+          packet1: { wire: "w-edge-spa", color: "#38bdf8" },
+          packet2: null
+        },
+        {
+          id: 2,
+          badge: "STAGE 3 OF 7 // INTERACTIVE PROJECT DEMOS",
+          title: "Filter Projects and Launch HTML Walkthroughs",
+          voiceover:
+            'Recruiters filter portfolio cards in <code>Projects.jsx</code> and open standalone interactive HTML architecture walkthroughs directly.',
+          specs: [
+            'Interactive filter buttons sort projects by Kubernetes, Azure, Terraform, and Automation tags.',
+            'The <code>public/projects/</code> folder serves sanitized HTML walkthroughs without server-side overhead.',
+            'Each walkthrough runs offline-ready animations and diagrams inside the visitor browser.'
+          ],
+          code: "GET https://luzon.arcilla.org/projects/homelab-walkthrough.html -> 200 OK (Direct Static HTML)",
+          activeNodes: ["n-spa", "n-demo"],
+          visitedNodes: ["n-dns", "n-edge"],
+          activeWires: ["w-edge-demo"],
+          packet1: { wire: "w-edge-demo", color: "#38bdf8" },
+          packet2: null
+        },
+        {
+          id: 3,
+          badge: "STAGE 4 OF 7 // SERVERLESS CONTACT API",
+          title: "Submit Recruiter Form to Azure Functions",
+          voiceover:
+            'The contact form sends visitor inquiries over HTTPS POST to the managed Azure Functions <code>/api/contact</code> endpoint.',
+          specs: [
+            'Azure Functions validates sender email format, message length, and required fields.',
+            'Serverless execution scales on demand without maintaining permanent backend servers.',
+            'Application settings protect secret API keys outside the public GitHub repository.'
+          ],
+          code: 'POST https://luzon.arcilla.org/api/contact -> { name, email, message } -> Validated',
+          activeNodes: ["n-spa", "n-api"],
+          visitedNodes: ["n-dns", "n-edge", "n-demo"],
+          activeWires: ["w-spa-api"],
+          packet1: { wire: "w-spa-api", color: "#fbbf24" },
+          packet2: null
+        },
+        {
+          id: 4,
+          badge: "STAGE 5 OF 7 // AUTOMATED EMAIL DISPATCH",
+          title: "Relay Inquiry to Inbox via SendGrid or Graph",
+          voiceover:
+            'Azure Functions authenticates with SendGrid or Microsoft Graph and dispatches the recruiter message to the inbox.',
+          specs: [
+            'Encrypted API credentials authorize outbound transactional email delivery.',
+            'The mail service delivers structured inquiry alerts to Louie in real time.',
+            'A JSON success response triggers immediate visual confirmation in the portfolio interface.'
+          ],
+          code: 'Azure Function -> SendGrid / Graph API -> 202 Accepted -> UI: "Message Sent"',
+          activeNodes: ["n-api", "n-mail"],
+          visitedNodes: ["n-dns", "n-edge", "n-spa", "n-demo"],
+          activeWires: ["w-api-mail"],
+          packet1: { wire: "w-api-mail", color: "#fbbf24" },
+          packet2: null
+        },
+        {
+          id: 5,
+          badge: "STAGE 6 OF 7 // CI/CD BRANCHING & STAGING",
+          title: "Build Pull Request and Verify Staging URL",
+          voiceover:
+            'Opening a GitHub pull request starts GitHub Actions, which deploys an isolated Azure staging preview URL.',
+          specs: [
+            'Developers isolate new features inside dedicated <code>feat/*</code> branches before merging.',
+            'Oryx compiles the Vite production bundle inside the GitHub Actions runner.',
+            'Azure Static Web Apps publishes a temporary staging slot for pre-release testing.'
+          ],
+          code: "PR #1 (feat/* -> main) -> GitHub Actions Build -> https://*-1.azurestaticapps.net",
+          activeNodes: ["n-git", "n-actions", "n-edge"],
+          visitedNodes: ["n-dns", "n-spa", "n-demo", "n-api", "n-mail"],
+          activeWires: ["w-git-actions", "w-actions-swa"],
+          packet1: { wire: "w-git-actions", color: "#34d399" },
+          packet2: { wire: "w-actions-swa", color: "#34d399" }
+        },
+        {
+          id: 6,
+          badge: "STAGE 7 OF 7 // PRODUCTION RELEASE & SEO",
+          title: "Merge to Main and Index in Google Search",
+          voiceover:
+            'Merging into <code>main</code> publishes updates to <code>luzon.arcilla.org</code> while Google Search Console indexes new pages.',
+          specs: [
+            'The CI/CD pipeline updates production edge nodes and deletes the closed pull request slot.',
+            'Google Search Console crawls verified URLs to improve recruiter search visibility.',
+            'The platform maintains continuous availability with automated deployment rollouts.'
+          ],
+          code: "Merge PR -> main -> Production Live (luzon.arcilla.org) + Search Console Indexed",
+          activeNodes: ["n-edge", "n-seo", "n-dns"],
+          visitedNodes: ["n-spa", "n-demo", "n-api", "n-mail", "n-git", "n-actions"],
+          activeWires: ["w-seo-dns", "w-dns-edge"],
+          packet1: { wire: "w-seo-dns", color: "#a78bfa" },
+          packet2: { wire: "w-dns-edge", color: "#34d399" }
+        }
+      ];
+
+      // State variables
+      let activeStageIndex = 0;
+      let playing = false;
+      let speed = 1.0;
+      let timerId = null;
+      let rafId = null;
+      let pktProgress = 0;
+
+      // DOM References
+      const playBtn = document.getElementById("playBtn");
+      const playBtnIcon = document.getElementById("playBtnIcon");
+      const playBtnLabel = document.getElementById("playBtnLabel");
+      const stepBackBtn = document.getElementById("stepBackBtn");
+      const stepNextBtn = document.getElementById("stepNextBtn");
+      const speedToggleBtn = document.getElementById("speedToggleBtn");
+      const resetPlayerBtn = document.getElementById("resetPlayerBtn");
+      const timelineFill = document.getElementById("timelineFill");
+
+      const stageTabs = document.querySelectorAll(".stage-tab");
+      const archNodes = document.querySelectorAll(".arch-node");
+      const wireFlows = document.querySelectorAll(".wire-flow");
+
+      const drawerStageBadge = document.getElementById("drawerStageBadge");
+      const drawerPlayState = document.getElementById("drawerPlayState");
+      const drawerTitle = document.getElementById("drawerTitle");
+      const drawerVoiceover = document.getElementById("drawerVoiceover");
+      const drawerSpecsList = document.getElementById("drawerSpecsList");
+      const drawerCodeBlock = document.getElementById("drawerCodeBlock");
+
+      const pkt1 = document.getElementById("pkt1");
+      const pkt2 = document.getElementById("pkt2");
+
+
+      /* ------------------------------------------------------------------------
+         SVG Glowing Data Packet Animation Loop
+         ------------------------------------------------------------------------ */
+      function movePacketAlongWire(circleEl, config) {
+        if (!config || !config.wire) {
+          circleEl.classList.remove("visible");
+          return;
+        }
+        const path = document.getElementById(config.wire);
+        if (!path || typeof path.getTotalLength !== "function") {
+          circleEl.classList.remove("visible");
+          return;
+        }
+        const len = path.getTotalLength();
+        const point = path.getPointAtLength(pktProgress * len);
+        circleEl.setAttribute("cx", point.x);
+        circleEl.setAttribute("cy", point.y);
+        circleEl.setAttribute("fill", config.color || "#38bdf8");
+        circleEl.style.filter = "drop-shadow(0 0 7px " + (config.color || "#38bdf8") + ")";
+        circleEl.classList.add("visible");
+      }
+
+      function animatePackets() {
+        const stage = WALKTHROUGH_STAGES[activeStageIndex];
+        pktProgress = (pktProgress + 0.015 * speed) % 1;
+        movePacketAlongWire(pkt1, stage.packet1);
+        movePacketAlongWire(pkt2, stage.packet2);
+        rafId = requestAnimationFrame(animatePackets);
+      }
+
+      /* ------------------------------------------------------------------------
+         Render Selected Stage
+         ------------------------------------------------------------------------ */
+      function applyStage(idx) {
+        activeStageIndex = Math.max(0, Math.min(WALKTHROUGH_STAGES.length - 1, idx));
+        const stage = WALKTHROUGH_STAGES[activeStageIndex];
+
+        // Progress bar
+        const pct = ((activeStageIndex + 1) / WALKTHROUGH_STAGES.length) * 100;
+        timelineFill.style.width = pct + "%";
+
+        // Stage tabs
+        stageTabs.forEach((tab, i) => {
+          tab.classList.toggle("active", i === activeStageIndex);
+          tab.classList.toggle("done", i < activeStageIndex);
+        });
+
+        // SVG Architecture Nodes
+        archNodes.forEach((node) => {
+          const id = node.id;
+          node.classList.toggle("active", stage.activeNodes.includes(id));
+          node.classList.toggle("visited", stage.visitedNodes.includes(id));
+        });
+
+        // SVG Wires
+        wireFlows.forEach((wire) => {
+          wire.classList.toggle("flowing", stage.activeWires.includes(wire.id));
+        });
+
+        // Synchronized Inspector Drawer
+        drawerStageBadge.textContent = stage.badge;
+        drawerPlayState.textContent = playing
+          ? "Playing (" + speed.toFixed(1) + "x)"
+          : "Interactive Mode";
+        drawerTitle.textContent = stage.title;
+        drawerVoiceover.innerHTML = stage.voiceover;
+
+        drawerSpecsList.innerHTML = "";
+        stage.specs.forEach((specHtml) => {
+          const li = document.createElement("li");
+          li.innerHTML = specHtml;
+          drawerSpecsList.appendChild(li);
+        });
+
+        drawerCodeBlock.textContent = stage.code;
+
+        // Button states
+        stepBackBtn.disabled = activeStageIndex === 0;
+        stepNextBtn.disabled = activeStageIndex === WALKTHROUGH_STAGES.length - 1 && !playing;
+
+        // Restart packet loop cleanly
+        pktProgress = 0;
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(animatePackets);
+      }
+
+      /* ------------------------------------------------------------------------
+         Playback Engine Controls
+         ------------------------------------------------------------------------ */
+      function scheduleAutoAdvance() {
+        if (timerId) clearTimeout(timerId);
+        if (!playing) return;
+
+        const interval = Math.round(4500 / speed);
+        timerId = setTimeout(() => {
+          if (!playing) return;
+          if (activeStageIndex < WALKTHROUGH_STAGES.length - 1) {
+            applyStage(activeStageIndex + 1);
+            scheduleAutoAdvance();
+          } else {
+            stopPlayback();
+            drawerPlayState.textContent = "Walkthrough Complete";
+          }
+        }, interval);
+      }
+
+      function startPlayback() {
+        if (playing) return;
+        playing = true;
+        playBtnIcon.innerHTML = "&#10074;&#10074;";
+        playBtnLabel.textContent = "Pause";
+
+        if (activeStageIndex === WALKTHROUGH_STAGES.length - 1) {
+          applyStage(0);
+        } else {
+          applyStage(activeStageIndex);
+        }
+        scheduleAutoAdvance();
+      }
+
+      function stopPlayback() {
+        playing = false;
+        playBtnIcon.innerHTML = "&#9654;";
+        playBtnLabel.textContent = "Play Walkthrough";
+        if (timerId) {
+          clearTimeout(timerId);
+          timerId = null;
+        }
+        drawerPlayState.textContent = "Paused";
+      }
+
+      playBtn.addEventListener("click", () => {
+        if (playing) {
+          stopPlayback();
+        } else {
+          startPlayback();
+        }
+      });
+
+      stepBackBtn.addEventListener("click", () => {
+        stopPlayback();
+        if (activeStageIndex > 0) applyStage(activeStageIndex - 1);
+      });
+
+      stepNextBtn.addEventListener("click", () => {
+        stopPlayback();
+        if (activeStageIndex < WALKTHROUGH_STAGES.length - 1) applyStage(activeStageIndex + 1);
+      });
+
+      resetPlayerBtn.addEventListener("click", () => {
+        stopPlayback();
+        applyStage(0);
+      });
+
+      speedToggleBtn.addEventListener("click", () => {
+        if (speed === 1.0) {
+          speed = 1.5;
+        } else if (speed === 1.5) {
+          speed = 2.0;
+        } else {
+          speed = 1.0;
+        }
+        speedToggleBtn.textContent = "Speed: " + speed.toFixed(1) + "x";
+        if (playing) {
+          drawerPlayState.textContent = "Playing (" + speed.toFixed(1) + "x)";
+          scheduleAutoAdvance();
+        }
+      });
+
+      // Stage tabs click
+      stageTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          stopPlayback();
+          const target = parseInt(tab.getAttribute("data-stage"), 10);
+          applyStage(target);
+        });
+      });
+
+      // Interactive clickable SVG architecture nodes
+      archNodes.forEach((node) => {
+        node.addEventListener("click", () => {
+          stopPlayback();
+          const target = parseInt(node.getAttribute("data-stage"), 10);
+          applyStage(target);
+        });
+      });
+
+      // Boot initial state
+      applyStage(0);
+    })();
+  </script>
+</body>
+</html>
