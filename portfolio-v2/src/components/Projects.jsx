@@ -6,6 +6,14 @@ function Projects() {
 
   const projects = [
     {
+      title: "Multi-Node Raspberry Pi Home Lab",
+      description:
+        "Four-node Raspberry Pi infrastructure running MicroK8s with Kyverno and Trivy DevSecOps guardrails, n8n workflow automation, Pi-hole DNS filtering, and centralized Prometheus/Grafana observability.",
+      technologies: ["Kubernetes", "Observability", "Docker", "DevSecOps", "Automation"],
+      link: "https://github.com/zenzired/homelab-observability-devsecops",
+      walkthroughLink: "/projects/homelab-walkthrough.html",
+    },
+    {
       title: "Azure Portfolio Website",
       description:
         "Personal portfolio built using React, Vite and Tailwind CSS, designed for deployment to Azure Static Web Apps with GitHub-based CI/CD workflows.",
@@ -37,6 +45,8 @@ function Projects() {
 
   const techFilters = [
     "All",
+    "Kubernetes",
+    "Observability",
     "Azure",
     "AWS",
     "Terraform",
@@ -103,6 +113,7 @@ function Projects() {
                 ease: "easeOut",
               }}
               className="
+                flex flex-col justify-between
                 bg-slate-800/60
                 backdrop-blur-md
                 border border-slate-700/80
@@ -116,47 +127,62 @@ function Projects() {
                 hover:-translate-y-1
               "
             >
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
-                {project.title}
-              </h3>
+              <div>
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
+                  {project.title}
+                </h3>
 
-              <p className="text-slate-300 leading-relaxed mb-6">
-                {project.description}
-              </p>
+                <p className="text-slate-300 leading-relaxed mb-6">
+                  {project.description}
+                </p>
 
-              <div className="flex flex-wrap gap-3 mb-6">
-                {project.technologies.map((tech) => (
-                  <span
-                    key={tech}
-                    className="
-                      bg-slate-800/90
-                      text-sky-300
-                      border border-slate-700/60
-                      hover:border-sky-400/50
-                      hover:text-sky-200
-                      hover:bg-slate-700/60
-                      transition-all
-                      duration-200
-                      px-3.5 py-1.5
-                      rounded-full
-                      text-sm
-                      font-medium
-                      cursor-default
-                    "
-                  >
-                    {tech}
-                  </span>
-                ))}
+                <div className="flex flex-wrap gap-3 mb-6">
+                  {project.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      className="
+                        bg-slate-800/90
+                        text-sky-300
+                        border border-slate-700/60
+                        hover:border-sky-400/50
+                        hover:text-sky-200
+                        hover:bg-slate-700/60
+                        transition-all
+                        duration-200
+                        px-3.5 py-1.5
+                        rounded-full
+                        text-sm
+                        font-medium
+                        cursor-default
+                      "
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
               </div>
 
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 text-sky-400 font-medium hover:text-sky-300 transition"
-              >
-                View Project →
-              </a>
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                {project.walkthroughLink && (
+                  <a
+                    href={project.walkthroughLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-sky-500 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-sky-500/20 hover:bg-sky-400 transition"
+                  >
+                    Interactive Walkthrough ↗
+                  </a>
+                )}
+
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sky-400 font-medium hover:text-sky-300 transition"
+                >
+                  {project.walkthroughLink ? "View Source →" : "View Project →"}
+                </a>
+              </div>
             </motion.div>
           ))}
         </AnimatePresence>
