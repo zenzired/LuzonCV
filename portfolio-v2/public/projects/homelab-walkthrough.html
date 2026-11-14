@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ASD-STE100 Technical Manual — Multi-Node Raspberry Pi Home Lab</title>
+  <title>Technical Manual — Multi-Node Raspberry Pi Home Lab</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -105,9 +105,6 @@
             <h1 class="text-base font-semibold tracking-tight text-white sm:text-lg">
               Multi-Node Raspberry Pi Home Lab
             </h1>
-            <span class="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-medium text-accentGreen">
-              ASD-STE100 COMPLIANT
-            </span>
           </div>
           <p class="text-xs text-slate-400">
             System Architecture, Animated Walkthrough, and Maintenance Manual (LAN 192.168.2.0/24)
@@ -457,11 +454,11 @@
       </div>
     </section>
 
-    <!-- SECTION 1: System Overview (ASD-STE100) -->
+    <!-- SECTION 1: System Overview -->
     <section class="rounded-xl border border-borderSubtle bg-surface p-6">
       <div class="mb-4 flex items-center justify-between border-b border-borderSubtle pb-3">
         <h2 class="text-lg font-bold text-white">1. System Overview</h2>
-        <span class="font-mono text-xs text-slate-400">REF: STE-OVERVIEW-01</span>
+        <span class="font-mono text-xs text-slate-400">REF: SYS-OVERVIEW-01</span>
       </div>
       <div class="grid gap-4 text-sm leading-relaxed text-slate-200 md:grid-cols-2">
         <div class="space-y-3">
@@ -487,7 +484,7 @@
     <section class="rounded-xl border border-borderSubtle bg-surface p-6">
       <div class="mb-4 flex items-center justify-between border-b border-borderSubtle pb-3">
         <h2 class="text-lg font-bold text-white">2. Hardware and Network Inventory</h2>
-        <span class="font-mono text-xs text-slate-400">REF: STE-INVENTORY-02</span>
+        <span class="font-mono text-xs text-slate-400">REF: SYS-INVENTORY-02</span>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-left text-sm">
@@ -539,11 +536,11 @@
       </div>
     </section>
 
-    <!-- SECTION 3: Operating & Maintenance Procedures (Imperative ASD-STE100 Steps) -->
+    <!-- SECTION 3: Operating & Maintenance Procedures -->
     <section class="rounded-xl border border-borderSubtle bg-surface p-6">
       <div class="mb-4 flex items-center justify-between border-b border-borderSubtle pb-3">
         <h2 class="text-lg font-bold text-white">3. Operating and Maintenance Procedures</h2>
-        <span class="font-mono text-xs text-slate-400">REF: STE-PROC-03</span>
+        <span class="font-mono text-xs text-slate-400">REF: SYS-PROC-03</span>
       </div>
 
       <div class="grid gap-6 lg:grid-cols-2">
@@ -608,7 +605,7 @@
     <section class="rounded-xl border border-borderSubtle bg-surface p-6">
       <div class="mb-4 flex items-center justify-between border-b border-borderSubtle pb-3">
         <h2 class="text-lg font-bold text-white">4. Fault Isolation and Corrective Actions</h2>
-        <span class="font-mono text-xs text-slate-400">REF: STE-FAULT-04</span>
+        <span class="font-mono text-xs text-slate-400">REF: SYS-FAULT-04</span>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-left text-sm">
@@ -650,16 +647,11 @@
       </div>
     </section>
 
-    <!-- SECTION 5: ASD-STE100 Compliance Note -->
-    <footer class="rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-5">
+    <!-- SECTION 5: Repository Reference Footer -->
+    <footer class="rounded-xl border border-borderSubtle bg-surface p-5">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-accentGreen">
-            ASD-STE100 Specification Note
-          </h3>
-          <p class="mt-1 text-xs leading-relaxed text-slate-300">
-            This manual follows ASD-STE100 (Simplified Technical English) rules: active voice, imperative verbs for procedures, one instruction per sentence, maximum 20–25 words per sentence, and approved technical vocabulary without ambiguous synonyms.
-          </p>
+        <div class="font-mono text-xs text-slate-400">
+          Multi-Node Raspberry Pi Home Lab Architecture &amp; Operations Manual
         </div>
         <div class="shrink-0 font-mono text-xs text-slate-400">
           Repo: <span class="text-slate-200">zenzired/homelab-observability-devsecops</span>
@@ -670,7 +662,7 @@
   </main>
 
   <script>
-    // Scene definitions strictly adhering to ASD-STE100 rules
+    // Scene definitions for the animated architecture walkthrough
     const SCENES = [
       {
         title: "SCENE 1: SYSTEM ARCHITECTURE AND NODE ISOLATION",
