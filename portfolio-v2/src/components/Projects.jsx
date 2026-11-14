@@ -19,6 +19,7 @@ function Projects() {
         "Personal portfolio built using React, Vite and Tailwind CSS, designed for deployment to Azure Static Web Apps with GitHub-based CI/CD workflows.",
       technologies: ["React", "Vite", "Tailwind CSS", "Azure"],
       link: "https://github.com/zenzired",
+      walkthroughLink: "/projects/luzoncv-walkthrough.html",
     },
     {
       title: "Azure Functions Contact Platform",
